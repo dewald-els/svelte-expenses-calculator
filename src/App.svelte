@@ -516,7 +516,7 @@
     <aside class="panel results-panel">
       <p class="section-kicker light">Monthly spend outlook</p>
       <div class="total-yen">
-        {formatYen(planResult.monthlySpend)}<span class="total-unit"
+        <span class="total-value">{formatYen(planResult.monthlySpend)}</span><span class="total-unit"
           >/ month</span
         >
       </div>

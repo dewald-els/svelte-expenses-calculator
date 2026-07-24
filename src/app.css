@@ -451,17 +451,26 @@ h1 span {
 }
 
 .total-yen {
-  font-size: clamp(40px, 6vw, 64px);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: clamp(34px, 4.5vw, 56px);
   font-weight: 850;
-  line-height: 1;
+  line-height: 0.95;
   margin-top: 10px;
 }
 
+.total-yen .total-value {
+  display: inline-block;
+}
+
 .total-yen .total-unit {
-  font-size: 0.32em;
+  display: inline-block;
+  font-size: 0.3em;
   font-weight: 500;
+  line-height: 1;
   color: #a9beb6;
-  margin-left: 6px;
 }
 
 .total-yen .of-text {
@@ -899,6 +908,11 @@ footer {
   }
 
   .total-yen {
-    font-size: 44px;
+    font-size: clamp(30px, 10.2vw, 40px);
+    gap: 4px;
+  }
+
+  .total-yen .total-unit {
+    font-size: 0.34em;
   }
 }
