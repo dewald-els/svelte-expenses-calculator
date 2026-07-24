@@ -1,4 +1,9 @@
-import type { CurrencyCode, ExpenseId, LifestylePresetName, PlanInput } from './types'
+import type {
+  CurrencyCode,
+  ExpenseId,
+  LifestylePresetName,
+  PlanInput,
+} from "./types";
 
 export const currencyRates: Record<CurrencyCode, number> = {
   USD: 0.0067,
@@ -8,9 +13,12 @@ export const currencyRates: Record<CurrencyCode, number> = {
   AUD: 0.0102,
   CAD: 0.0092,
   SGD: 0.009,
-}
+};
 
-export const presetExpenses: Record<LifestylePresetName, Record<ExpenseId, number>> = {
+export const presetExpenses: Record<
+  LifestylePresetName,
+  Record<ExpenseId, number>
+> = {
   lean: {
     rent: 70000,
     utilities: 10000,
@@ -47,26 +55,44 @@ export const presetExpenses: Record<LifestylePresetName, Record<ExpenseId, numbe
     personal: 25000,
     other: 12000,
   },
-}
+};
 
 export function createDefaultPlanInput(): PlanInput {
   return {
     income: 320000,
+    incomeMode: "monthlyTakeHome",
+    yearlyGrossIncome: 5500000,
     household: 1,
-    currency: 'NOK',
+    currency: "NOK",
     exchangeRate: currencyRates.NOK,
     bufferPercent: 5,
+    savingsGoalPercent: 20,
+    taxAssumptions: {
+      profileMode: "auto",
+      employmentDurationBand: "under1Year",
+      residency: "resident",
+      firstYearInJapan: true,
+      socialInsuranceRate: 0.1415,
+      employmentInsuranceRate: 0.0055,
+      residentTaxRate: 0.1,
+    },
     expenses: { ...presetExpenses.balanced },
-  }
+  };
 }
 
-export function findMatchingPresetName(expenses: Record<ExpenseId, number>): LifestylePresetName | null {
-  const names: LifestylePresetName[] = ['lean', 'balanced', 'comfortable']
+export function findMatchingPresetName(
+  expenses: Record<ExpenseId, number>,
+): LifestylePresetName | null {
+  const names: LifestylePresetName[] = ["lean", "balanced", "comfortable"];
   for (const name of names) {
-    const preset = presetExpenses[name]
-    if (Object.keys(preset).every((id) => preset[id as ExpenseId] === expenses[id as ExpenseId])) {
-      return name
+    const preset = presetExpenses[name];
+    if (
+      Object.keys(preset).every(
+        (id) => preset[id as ExpenseId] === expenses[id as ExpenseId],
+      )
+    ) {
+      return name;
     }
   }
-  return null
+  return null;
 }

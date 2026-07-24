@@ -1,10 +1,9 @@
 <script lang="ts">
   import type { ChartSlice } from '../planner/types'
 
-  export let slices: ChartSlice[] = []
-  export let total: number = 0
+  let { slices = [], total = 0 }: { slices: ChartSlice[]; total: number } = $props()
 
-  let canvas: HTMLCanvasElement
+  let canvas = $state<HTMLCanvasElement | undefined>(undefined)
 
   function drawChart(chartSlices: ChartSlice[]): void {
     if (!canvas) {
@@ -41,7 +40,9 @@
     }
   }
 
-  $: drawChart(slices)
+  $effect(() => {
+    drawChart(slices)
+  })
 </script>
 
 <div class="chart-wrap">

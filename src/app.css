@@ -247,6 +247,27 @@ h1 span {
   margin-top: 24px;
 }
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mode-button {
+  border: 0;
+  padding: 11px 12px;
+  background: #fff;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.mode-button.active {
+  color: var(--ink);
+  background: #f4f0e9;
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -255,6 +276,25 @@ h1 span {
 
 .field.full {
   grid-column: 1 / -1;
+}
+
+.tax-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.check-row input {
+  margin: 0;
 }
 
 .money-input,
@@ -304,6 +344,24 @@ h1 span {
   height: 1px;
   background: var(--line);
   margin: 26px 0;
+}
+
+.tax-note {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f5efe6;
+}
+
+.tax-note strong,
+.tax-note small {
+  display: block;
+}
+
+.tax-note small {
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .section-row {
@@ -399,6 +457,23 @@ h1 span {
   font-size: 13px;
 }
 
+.spend-breakdown {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.spend-breakdown div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #c5d4cf;
+}
+
+.spend-breakdown strong {
+  color: #fff;
+}
+
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -411,6 +486,56 @@ h1 span {
   background: #ffffff10;
   border: 1px solid #ffffff18;
   border-radius: 14px;
+}
+
+.goal-card {
+  margin: 2px 0 18px;
+  padding: 14px;
+  border: 1px solid #ffffff20;
+  border-radius: 14px;
+  background: #ffffff0b;
+}
+
+.goal-head,
+.goal-stats > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.goal-head {
+  margin-bottom: 10px;
+}
+
+.goal-head span {
+  color: #b7cbc3;
+  font-size: 12px;
+}
+
+.goal-card input {
+  width: 100%;
+  accent-color: #e6a277;
+}
+
+.goal-stats {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.goal-stats > div {
+  font-size: 12px;
+  color: #c5d4cf;
+}
+
+.goal-stats strong {
+  color: #fff;
+}
+
+.goal-card small {
+  display: block;
+  margin-top: 10px;
+  color: #b7cbc3;
+  line-height: 1.4;
 }
 
 .summary-stats span,
