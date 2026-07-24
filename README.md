@@ -22,8 +22,9 @@ This repo includes a workflow at `.github/workflows/deploy-pages.yml` that deplo
 
 1. Open repository settings on GitHub.
 2. Go to Pages.
-3. Set Source to GitHub Actions.
-4. Push to `main` (or run the workflow manually from the Actions tab).
+3. Set Source to Deploy from a branch.
+4. Select branch `gh-pages` and folder `/ (root)`.
+5. Push to `main` (or run the workflow manually from the Actions tab).
 
 Your site URL will be:
 
