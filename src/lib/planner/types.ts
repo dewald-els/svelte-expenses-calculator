@@ -13,16 +13,7 @@ export const expenseIds = [
 
 export type ExpenseId = (typeof expenseIds)[number];
 
-export type CurrencyCode =
-  | "USD"
-  | "EUR"
-  | "GBP"
-  | "NOK"
-  | "AUD"
-  | "CAD"
-  | "SGD";
-
-export type LifestylePresetName = "lean" | "balanced" | "comfortable";
+export type LifestylePresetName = "lean" | "balanced" | "comfortable" | "custom";
 export type IncomeInputMode = "monthlyTakeHome" | "yearlyGross";
 export type TaxResidency = "resident" | "nonResident";
 export type TaxProfileMode = "auto" | "manual";
@@ -130,8 +121,6 @@ export interface PlanInput {
   incomeMode: IncomeInputMode;
   yearlyGrossIncome: number;
   household: number;
-  currency: CurrencyCode;
-  exchangeRate: number;
   bufferPercent: number;
   savingsGoalPercent: number;
   taxAssumptions: TaxAssumptions;
@@ -181,8 +170,9 @@ export interface PlanResult {
   threeMonthSavings: number;
   sixMonthSavings: number;
   twelveMonthSavings: number;
+  fiveYearSavings: number;
+  tenYearSavings: number;
   dailyFlexibleAllowance: number;
-  convertedSpend: number;
   insight: string;
   takeHomeEstimate: TakeHomeEstimate | null;
   chartSlices: ChartSlice[];

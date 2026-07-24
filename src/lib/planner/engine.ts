@@ -15,6 +15,7 @@ const sliceColors = [
   "#a9a2d6",
   "#d88484",
   "#8db2ce",
+  "#7fb069",
 ];
 
 // ── Pure helpers ───────────────────────────────────────────────────
@@ -252,7 +253,6 @@ export function calculatePlan(input: PlanInput): PlanResult {
 
   // 2. Sanitise scalar inputs
   const household = clamp(Math.floor(input.household || 1), 1, 10);
-  const exchangeRate = sanitise(input.exchangeRate);
   const bufferPercent = clamp(sanitise(input.bufferPercent), 0, 20);
   const savingsGoalPercent = clamp(sanitise(input.savingsGoalPercent), 0, 70);
 
@@ -299,12 +299,13 @@ export function calculatePlan(input: PlanInput): PlanResult {
     targetMonthlySpend,
     savingsGoalGap,
     incomeUsedRate,
-    annualSavings: monthlySavings * 12,
-    threeMonthSavings: monthlySavings * 3,
-    sixMonthSavings: monthlySavings * 6,
-    twelveMonthSavings: monthlySavings * 12,
+    annualSavings: targetMonthlySavings * 12,
+    threeMonthSavings: targetMonthlySavings * 3,
+    sixMonthSavings: targetMonthlySavings * 6,
+    twelveMonthSavings: targetMonthlySavings * 12,
+    fiveYearSavings: targetMonthlySavings * 60,
+    tenYearSavings: targetMonthlySavings * 120,
     dailyFlexibleAllowance: flexibleSpend / (30 * household),
-    convertedSpend: monthlySpend * exchangeRate,
     insight: buildInsight(monthlySavings, savingsGoalGap, savingsGoalPercent),
     takeHomeEstimate,
     chartSlices: [
@@ -344,6 +345,11 @@ export function calculatePlan(input: PlanInput): PlanResult {
         name: "Other + buffer",
         amount: expense(input.expenses, "other") + bufferAmount,
         color: sliceColors[5],
+      },
+      {
+        name: "Savings",
+        amount: targetMonthlySavings,
+        color: sliceColors[6],
       },
     ],
     incomeSplit: buildIncomeSplit(

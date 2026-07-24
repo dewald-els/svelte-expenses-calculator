@@ -1,19 +1,8 @@
 import type {
-  CurrencyCode,
   ExpenseId,
   LifestylePresetName,
   PlanInput,
 } from "./types";
-
-export const currencyRates: Record<CurrencyCode, number> = {
-  USD: 0.0067,
-  EUR: 0.0062,
-  GBP: 0.0053,
-  NOK: 0.069,
-  AUD: 0.0102,
-  CAD: 0.0092,
-  SGD: 0.009,
-};
 
 // ── Preset configuration ──────────────────────────────────────────
 // Each preset defines:
@@ -85,6 +74,21 @@ const presetConfigs: Record<LifestylePresetName, PresetConfig> = {
       other: 0.022,
     },
   },
+  custom: {
+    budgetUse: 0,
+    weights: {
+      rent: 0,
+      utilities: 0,
+      communications: 0,
+      insurance: 0,
+      groceries: 0,
+      dining: 0,
+      transport: 0,
+      leisure: 0,
+      personal: 0,
+      other: 0,
+    },
+  },
 };
 
 /**
@@ -121,16 +125,15 @@ export const presetExpenses: Record<
   lean: computePresetExpenses("lean", 320000, 5, 20),
   balanced: computePresetExpenses("balanced", 320000, 5, 20),
   comfortable: computePresetExpenses("comfortable", 320000, 5, 20),
+  custom: computePresetExpenses("custom", 320000, 5, 20),
 };
 
 export function createDefaultPlanInput(): PlanInput {
   return {
     income: 320000,
-    incomeMode: "monthlyTakeHome",
+    incomeMode: "yearlyGross",
     yearlyGrossIncome: 5500000,
     household: 1,
-    currency: "NOK",
-    exchangeRate: currencyRates.NOK,
     bufferPercent: 5,
     savingsGoalPercent: 20,
     taxAssumptions: {
@@ -148,7 +151,8 @@ export function createDefaultPlanInput(): PlanInput {
 
 export function findMatchingPresetName(
   expenses: Record<ExpenseId, number>,
-): LifestylePresetName | null {
-  // No longer meaningful for exact matching since presets are dynamic
-  return null;
+): LifestylePresetName {
+  // Presets are recomputed dynamically from income, so exact matching is
+  // unreliable. Treat any saved/loaded state as a custom plan.
+  return "custom";
 }

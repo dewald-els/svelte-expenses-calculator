@@ -1,6 +1,5 @@
 import { expenseIds } from "./types";
 import type {
-  CurrencyCode,
   EmploymentDurationBand,
   ExpenseId,
   IncomeInputMode,
@@ -8,18 +7,8 @@ import type {
   TaxProfileMode,
   TaxResidency,
 } from "./types";
-import { currencyRates } from "./presets";
 
 const storageKey = "tokyoLivingPlan-v2";
-const currencyCodes: CurrencyCode[] = [
-  "USD",
-  "EUR",
-  "GBP",
-  "NOK",
-  "AUD",
-  "CAD",
-  "SGD",
-];
 const incomeModes: IncomeInputMode[] = ["monthlyTakeHome", "yearlyGross"];
 const taxProfileModes: TaxProfileMode[] = ["auto", "manual"];
 const employmentDurationBands: EmploymentDurationBand[] = [
@@ -34,15 +23,6 @@ function asNumber(value: unknown, fallback: number): number {
     return fallback;
   }
   return value;
-}
-
-function asCurrency(value: unknown, fallback: CurrencyCode): CurrencyCode {
-  if (typeof value !== "string") {
-    return fallback;
-  }
-  return currencyCodes.includes(value as CurrencyCode)
-    ? (value as CurrencyCode)
-    : fallback;
 }
 
 function asIncomeMode(
@@ -129,7 +109,6 @@ export function loadPlanDraft(defaultInput: PlanInput): PlanInput {
   }
 
   const data = parsed as Record<string, unknown>;
-  const currency = asCurrency(data.currency, defaultInput.currency);
   const taxAssumptionsRaw =
     typeof data.taxAssumptions === "object" && data.taxAssumptions !== null
       ? (data.taxAssumptions as Record<string, unknown>)
@@ -146,11 +125,6 @@ export function loadPlanDraft(defaultInput: PlanInput): PlanInput {
     household: Math.min(
       10,
       Math.max(1, Math.round(asNumber(data.household, defaultInput.household))),
-    ),
-    currency,
-    exchangeRate: Math.max(
-      0,
-      asNumber(data.exchangeRate, currencyRates[currency]),
     ),
     bufferPercent: Math.min(
       20,
