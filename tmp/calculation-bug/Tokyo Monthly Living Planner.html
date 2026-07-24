@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:5173/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="module" src="./Tokyo Monthly Living Planner_files/client"></script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monthly Tokyo cost-of-living and savings planner">
+    <title>Tokyo Monthly Living Planner</title>
+  <style type="text/css" data-vite-dev-id="/home/dewaldels/Developer/Web/svelte-expenses-calculator/src/app.css">/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-red-50: oklch(97.1% 0.013 17.38);
+    --color-red-700: oklch(50.5% 0.213 27.518);
+    --color-red-800: oklch(44.4% 0.177 26.899);
+    --color-green-50: oklch(98.2% 0.018 155.826);
+    --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-green-800: oklch(44.8% 0.119 151.328);
+    --color-blue-50: oklch(97% 0.014 254.604);
+    --color-blue-500: oklch(62.3% 0.214 259.815);
+    --color-blue-600: oklch(54.6% 0.245 262.881);
+    --color-blue-700: oklch(48.8% 0.243 264.376);
+    --color-slate-200: oklch(92.9% 0.013 255.508);
+    --color-slate-900: oklch(20.8% 0.042 265.755);
+    --color-gray-50: oklch(98.5% 0.002 247.839);
+    --color-gray-100: oklch(96.7% 0.003 264.542);
+    --color-gray-200: oklch(92.8% 0.006 264.531);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
+    --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-700: oklch(37.3% 0.034 259.733);
+    --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-gray-900: oklch(21% 0.034 264.665);
+    --color-stone-50: oklch(98.5% 0.001 106.423);
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --container-5xl: 64rem;
+    --container-7xl: 80rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --tracking-wider: 0.05em;
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.5rem;
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring:where(:not(iframe)) {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .collapse {
+    visibility: collapse;
+  }
+  .invisible {
+    visibility: hidden;
+  }
+  .visible {
+    visibility: visible;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .static {
+    position: static;
+  }
+  .inset-0 {
+    inset: 0px;
+  }
+  .isolate {
+    isolation: isolate;
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .mt-1 {
+    margin-top: var(--spacing);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mr-1 {
+    margin-right: var(--spacing);
+  }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
+  .ml-auto {
+    margin-left: auto;
+  }
+  .block {
+    display: block;
+  }
+  .contents {
+    display: contents;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .hidden {
+    display: none;
+  }
+  .inline {
+    display: inline;
+  }
+  .inline-block {
+    display: inline-block;
+  }
+  .table {
+    display: table;
+  }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
+  .h-12 {
+    height: calc(var(--spacing) * 12);
+  }
+  .h-48 {
+    height: calc(var(--spacing) * 48);
+  }
+  .h-full {
+    height: 100%;
+  }
+  .min-h-screen {
+    min-height: 100vh;
+  }
+  .w-1\/3 {
+    width: calc(1 / 3 * 100%);
+  }
+  .w-3 {
+    width: calc(var(--spacing) * 3);
+  }
+  .w-16 {
+    width: calc(var(--spacing) * 16);
+  }
+  .w-20 {
+    width: calc(var(--spacing) * 20);
+  }
+  .w-28 {
+    width: calc(var(--spacing) * 28);
+  }
+  .w-40 {
+    width: calc(var(--spacing) * 40);
+  }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
+  }
+  .w-full {
+    width: 100%;
+  }
+  .max-w-5xl {
+    max-width: var(--container-5xl);
+  }
+  .max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .shrink {
+    flex-shrink: 1;
+  }
+  .border-collapse {
+    border-collapse: collapse;
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
+  .gap-1 {
+    gap: var(--spacing);
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
+  }
+  :where(.space-y-2 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.space-y-6 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 6) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 6) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.space-y-10 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 10) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 10) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.space-y-12 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 12) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 12) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.divide-y > :not(:last-child)) {
+    --tw-divide-y-reverse: 0;
+    border-bottom-style: var(--tw-border-style);
+    border-top-style: var(--tw-border-style);
+    border-top-width: calc(1px * var(--tw-divide-y-reverse));
+    border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  }
+  :where(.divide-gray-200 > :not(:last-child)) {
+    border-color: var(--color-gray-200);
+  }
+  .overflow-auto {
+    overflow: auto;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-t {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
+  }
+  .border-b-2 {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 2px;
+  }
+  .border-l-4 {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 4px;
+  }
+  .border-blue-600 {
+    border-color: var(--color-blue-600);
+  }
+  .border-gray-300 {
+    border-color: var(--color-gray-300);
+  }
+  .border-slate-200 {
+    border-color: var(--color-slate-200);
+  }
+  .border-transparent {
+    border-color: transparent;
+  }
+  .bg-blue-50 {
+    background-color: var(--color-blue-50);
+  }
+  .bg-blue-600 {
+    background-color: var(--color-blue-600);
+  }
+  .bg-gray-50 {
+    background-color: var(--color-gray-50);
+  }
+  .bg-gray-100 {
+    background-color: var(--color-gray-100);
+  }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
+  }
+  .bg-green-50 {
+    background-color: var(--color-green-50);
+  }
+  .bg-red-50 {
+    background-color: var(--color-red-50);
+  }
+  .bg-stone-50 {
+    background-color: var(--color-stone-50);
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+  .py-1 {
+    padding-block: var(--spacing);
+  }
+  .py-1\.5 {
+    padding-block: calc(var(--spacing) * 1.5);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .py-3 {
+    padding-block: calc(var(--spacing) * 3);
+  }
+  .py-12 {
+    padding-block: calc(var(--spacing) * 12);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-left {
+    text-align: left;
+  }
+  .text-right {
+    text-align: right;
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
+  .text-blue-700 {
+    color: var(--color-blue-700);
+  }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
+  .text-gray-600 {
+    color: var(--color-gray-600);
+  }
+  .text-gray-700 {
+    color: var(--color-gray-700);
+  }
+  .text-gray-800 {
+    color: var(--color-gray-800);
+  }
+  .text-gray-900 {
+    color: var(--color-gray-900);
+  }
+  .text-green-700 {
+    color: var(--color-green-700);
+  }
+  .text-green-800 {
+    color: var(--color-green-800);
+  }
+  .text-red-700 {
+    color: var(--color-red-700);
+  }
+  .text-red-800 {
+    color: var(--color-red-800);
+  }
+  .text-slate-900 {
+    color: var(--color-slate-900);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .blur {
+    --tw-blur: blur(8px);
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .filter {
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  @media (hover: hover) {
+    .hover\:bg-blue-700:hover {
+      background-color: var(--color-blue-700);
+    }
+    .hover\:bg-gray-50:hover {
+      background-color: var(--color-gray-50);
+    }
+    .hover\:bg-gray-100:hover {
+      background-color: var(--color-gray-100);
+    }
+    .hover\:text-gray-900:hover {
+      color: var(--color-gray-900);
+    }
+  }
+  .disabled\:bg-gray-100:disabled {
+    background-color: var(--color-gray-100);
+  }
+  .disabled\:text-gray-500:disabled {
+    color: var(--color-gray-500);
+  }
+  @media (width >= 64rem) {
+    .lg\:col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+    .lg\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+body {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  background-color: var(--color-gray-50);
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+  color: var(--color-gray-900);
+}
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="range"] {
+  height: var(--spacing);
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 0.25rem;
+  background-color: var(--color-gray-200);
+  accent-color: var(--color-blue-600);
+}
+.cell-input {
+  border-style: var(--tw-border-style);
+  border-width: 0px;
+  background-color: transparent;
+  padding-inline: calc(var(--spacing) * 2);
+  padding-block: var(--spacing);
+  text-align: right;
+  font-family: var(--font-mono);
+  &:focus {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  &:focus {
+    --tw-ring-color: var(--color-blue-500);
+  }
+  &:focus {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  &:focus {
+    --tw-ring-inset: inset;
+  }
+}
+.cell-select {
+  width: 100%;
+  border-style: var(--tw-border-style);
+  border-width: 0px;
+  background-color: transparent;
+  padding-inline: calc(var(--spacing) * 2);
+  padding-block: var(--spacing);
+  text-align: right;
+  font-family: var(--font-mono);
+  &:focus {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  &:focus {
+    --tw-ring-color: var(--color-blue-500);
+  }
+  &:focus {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  &:focus {
+    --tw-ring-inset: inset;
+  }
+}
+.spreadsheet-table th, .spreadsheet-table td {
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+  border-color: var(--color-gray-300);
+  padding-inline: calc(var(--spacing) * 3);
+  padding-block: calc(var(--spacing) * 2);
+}
+.spreadsheet-table th {
+  background-color: var(--color-gray-100);
+  text-align: left;
+  font-size: var(--text-xs);
+  line-height: var(--tw-leading, var(--text-xs--line-height));
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
+  --tw-tracking: var(--tracking-wider);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-gray-700);
+  text-transform: uppercase;
+}
+.spreadsheet-table td {
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+}
+@property --tw-space-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-divide-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-space-y-reverse: 0;
+      --tw-divide-y-reverse: 0;
+      --tw-border-style: solid;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+    }
+  }
+}
+</style></head>
+  <body>
+    <div id="app"><div class="min-h-screen flex flex-col"><header class="border-b border-gray-300 bg-white"><div class="flex flex-wrap items-center justify-between gap-4 px-4 py-3"><div class="flex items-center gap-3"><span class="text-lg font-semibold text-gray-900">Tokyo Monthly Planner</span> <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">Live estimate</span></div> <div class="flex items-center gap-2"><button type="button" class="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">Reset</button> <button type="button" class="rounded border border-blue-600 bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700">Save plan</button></div></div></header> <nav class="border-b border-gray-300 bg-gray-50 px-4"><div class="flex gap-1"><span class="flex items-center px-2 py-2 text-xs font-semibold text-gray-500 uppercase">Preset</span> <button type="button" class="border-b-2 px-4 py-2 text-xs font-medium border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"><span class="mr-1">節</span> Lean</button><button type="button" class="border-b-2 px-4 py-2 text-xs font-medium border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"><span class="mr-1">暮</span> Balanced</button><button type="button" class="border-b-2 px-4 py-2 text-xs font-medium border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"><span class="mr-1">余</span> Comfortable</button><!----></div></nav> <main class="flex-1 overflow-auto p-4"><div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3"><section class="lg:col-span-2 space-y-6"><div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Income</span></div> <table class="w-full border-collapse text-sm"><tbody class="divide-y divide-gray-200"><tr><td class="w-1/3 border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Income basis</td><td class="border border-gray-300 px-3 py-2"><div class="flex gap-1"><button type="button" class="rounded border px-3 py-1 text-xs font-medium border-gray-300 bg-white text-gray-700 hover:bg-gray-50">Monthly take-home</button> <button type="button" class="rounded border px-3 py-1 text-xs font-medium border-blue-600 bg-blue-50 text-blue-700">Yearly gross (before tax)</button></div></td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Yearly gross income</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" step="50000" class="cell-input w-full"></div></td></tr><!----><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">People in household</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end gap-2"><button type="button" class="rounded border border-gray-300 px-2 py-0.5 text-xs hover:bg-gray-50">−</button> <input type="number" min="1" max="10" class="cell-input w-16"> <button type="button" class="rounded border border-gray-300 px-2 py-0.5 text-xs hover:bg-gray-50">+</button></div></td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Tax setup mode</td><td class="border border-gray-300 px-3 py-2"><div class="flex gap-1"><button type="button" class="rounded border px-3 py-1 text-xs font-medium border-blue-600 bg-blue-50 text-blue-700">Auto from duration</button> <button type="button" class="rounded border px-3 py-1 text-xs font-medium border-gray-300 bg-white text-gray-700 hover:bg-gray-50">Manual</button></div></td></tr> <tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Duration in Japan</td><td class="border border-gray-300 px-3 py-2"><select class="cell-select"><option value="under1Year">Less than 1 year</option><option value="oneToFiveYears">1 to 5 years</option><option value="overFiveYears">More than 5 years</option></select></td></tr><!----> <tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Tax residency</td><td class="border border-gray-300 px-3 py-2"><select class="cell-select disabled:bg-gray-100 disabled:text-gray-500" disabled=""><option value="resident">Resident taxpayer</option><option value="nonResident">Non-resident taxpayer</option></select></td></tr> <tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">First year in Japan</td><td class="border border-gray-300 px-3 py-2"><label class="flex items-center gap-2 text-xs"><input type="checkbox" class="rounded border-gray-300" disabled=""> No prior-year inhabitant tax assumed</label></td></tr> <tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Estimated take-home</td><td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold text-gray-900">¥55,418</td></tr><!----><!----><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Home currency</td><td class="border border-gray-300 px-3 py-2"><select class="cell-select"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="NOK">NOK</option><option value="AUD">AUD</option><option value="CAD">CAD</option><option value="SGD">SGD</option></select></td></tr></tbody></table> <div class="border-t border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">Gross ¥85,417 − income tax ¥17,442 <!----> − social insurance ¥12,086
+              − employment insurance ¥470.
+              Profile auto, residency nonResident, bracket Non-resident withholding (20.42%).</div><!----></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Savings &amp; buffer</span></div> <table class="w-full border-collapse text-sm"><tbody class="divide-y divide-gray-200"><tr><td class="w-1/3 border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Savings goal</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center gap-2"><input type="range" min="0" max="70" class="flex-1"> <input type="number" min="0" max="70" class="cell-input w-20"> <span class="text-gray-500">%</span></div></td><td class="border border-gray-300 bg-gray-50 px-3 py-2 text-right font-mono">¥13,855</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Unexpected buffer</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center gap-2"><input type="range" min="0" max="20" class="flex-1"> <input type="number" min="0" max="20" class="cell-input w-20"> <span class="text-gray-500">%</span></div></td><td class="border border-gray-300 bg-gray-50 px-3 py-2 text-right font-mono">¥6,050</td></tr></tbody></table></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Monthly expenses</span></div> <table class="w-full border-collapse text-sm"><thead><tr><th class="text-left">Category</th><th class="text-left">Description</th><th class="w-40 text-right">Amount</th></tr></thead><tbody class="divide-y divide-gray-200"><tr><td colspan="3" class="border border-gray-300 bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase text-gray-600">Fixed costs</td></tr> <tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">家</span>Rent</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Apartment or share house</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="5000"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">光</span>Utilities</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Electricity, gas and water</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="500"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">網</span>Phone and internet</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Mobile plan and home connection</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="500"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">保</span>Insurance / medical</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Out-of-pocket monthly allowance</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="500"></div></td></tr><!----><tr><td colspan="3" class="border border-gray-300 bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase text-gray-600">Flexible costs</td></tr> <tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">食</span>Groceries</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Food and household staples</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="1000"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">外</span>Dining and cafés</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Lunches and dinners out</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="1000"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">電</span>Transport</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Commuter pass and other trips</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="500"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">楽</span>Leisure</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Fitness, entertainment and hobbies</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="1000"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">衣</span>Shopping and personal care</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Clothing, toiletries and extras</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="1000"></div></td></tr><tr class="hover:bg-gray-50"><td class="border border-gray-300 px-3 py-2 font-medium text-gray-800"><span class="mr-2 text-gray-500">他</span>Other commitments</td><td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">Subscriptions, debt or remittances</td><td class="border border-gray-300 px-3 py-2"><div class="flex items-center justify-end"><span class="text-gray-500">¥</span> <input type="number" min="0" class="cell-input w-full" step="1000"></div></td></tr><!----><!----><tr class="bg-gray-100 font-semibold"><td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-700">Base expenses subtotal</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥121,000</td></tr></tbody></table></div></section> <aside class="space-y-6"><div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Monthly summary</span></div> <table class="w-full border-collapse text-sm"><tbody class="divide-y divide-gray-200"><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Effective income</td><td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold">¥55,418</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Base expenses</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥121,000</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Buffer (5%)</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥6,050</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Savings target (25%)</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥13,855</td></tr><tr class="bg-gray-100 font-semibold"><td class="border border-gray-300 px-3 py-2 text-gray-900">Total committed</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥140,905</td></tr><tr class="bg-red-50"><td class="border border-gray-300 px-3 py-2 font-semibold text-red-800">Over budget</td><td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold text-red-700">-¥85,486</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Income used</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">229.3%</td></tr></tbody></table></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Savings forecast</span></div> <table class="w-full border-collapse text-sm"><tbody class="divide-y divide-gray-200"><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">3 months</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">-¥214,895</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">6 months</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">-¥429,790</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">12 months</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">-¥859,580</td></tr><tr><td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Daily allowance</td><td class="border border-gray-300 px-3 py-2 text-right font-mono">¥567</td></tr></tbody></table></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Spend breakdown</span></div> <div class="p-4"><div class="relative mx-auto h-48 w-48"><div class="absolute inset-0 flex flex-col items-center justify-center text-center"><span class="text-xs text-gray-500">Monthly spend</span> <strong class="font-mono text-lg text-gray-900">¥127,050</strong></div> <canvas class="h-full w-full" width="192" height="192"></canvas></div><!----> <div class="mt-4 grid grid-cols-2 gap-1 text-xs"><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(231, 161, 119);"></span> <span class="text-gray-600">Housing</span> <span class="ml-auto font-mono">81%</span></div><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(135, 183, 167);"></span> <span class="text-gray-600">Food</span> <span class="ml-auto font-mono">7%</span></div><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(214, 198, 134);"></span> <span class="text-gray-600">Transport</span> <span class="ml-auto font-mono">2%</span></div><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(169, 162, 214);"></span> <span class="text-gray-600">Health</span> <span class="ml-auto font-mono">1%</span></div><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(216, 132, 132);"></span> <span class="text-gray-600">Lifestyle</span> <span class="ml-auto font-mono">4%</span></div><div class="flex items-center gap-2"><span class="inline-block h-3 w-3 rounded-sm" style="background: rgb(141, 178, 206);"></span> <span class="text-gray-600">Other + buffer</span> <span class="ml-auto font-mono">6%</span></div></div></div></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Income split</span></div> <div class="space-y-2 p-3 text-xs"><div><div class="flex justify-between"><span class="text-gray-700">Fixed essentials</span> <span class="font-mono">187.7%</span></div> <div class="mt-1 h-2 w-full bg-gray-200"><div class="h-2" style="width: 100%; background: rgb(231, 161, 119);"></div></div></div><div><div class="flex justify-between"><span class="text-gray-700">Flexible lifestyle</span> <span class="font-mono">30.7%</span></div> <div class="mt-1 h-2 w-full bg-gray-200"><div class="h-2" style="width: 30.6758%; background: rgb(135, 183, 167);"></div></div></div><div><div class="flex justify-between"><span class="text-gray-700">Safety buffer</span> <span class="font-mono">10.9%</span></div> <div class="mt-1 h-2 w-full bg-gray-200"><div class="h-2" style="width: 10.917%; background: rgb(214, 198, 134);"></div></div></div><div><div class="flex justify-between"><span class="text-gray-700">Deficit</span> <span class="font-mono">129.3%</span></div> <div class="mt-1 h-2 w-full bg-gray-200"><div class="h-2" style="width: 100%; background: rgb(216, 132, 132);"></div></div></div></div></div> <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white"><div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5"><span class="text-xs font-semibold uppercase text-gray-600">Exchange rate</span></div> <div class="p-3"><div class="flex items-center gap-2"><span class="text-xs text-gray-600">1 JPY =</span> <input id="exchange-rate-input" type="number" min="0" step="0.0001" class="cell-input w-28"> <span class="text-xs font-medium text-gray-700">NOK</span></div></div></div> <div class="rounded border border-gray-300 bg-white p-3 text-xs text-gray-600"><strong class="block text-gray-800">Planning insight</strong> <p class="mt-1">Your planned expenses exceed take-home pay by ¥71,632/month. You need to cut costs before you can save anything.</p></div></aside></div></main> <footer class="border-t border-gray-300 bg-gray-100 px-4 py-2 text-xs text-gray-600"><div class="flex flex-wrap justify-between gap-2"><span>Tokyo Monthly Living Planner</span> <span>Figures are planning assumptions. Gross-to-net mode uses simplified tax rules.</span></div></footer></div></div>
+    <script type="module" src="./Tokyo Monthly Living Planner_files/main.ts"></script>
+  
+
+</body></html>

@@ -22,7 +22,7 @@ export type CurrencyCode =
   | "CAD"
   | "SGD";
 
-export type LifestylePresetName = "lean" | "balanced" | "comfortable";
+export type LifestylePresetName = "lean" | "balanced" | "comfortable" | "custom";
 export type IncomeInputMode = "monthlyTakeHome" | "yearlyGross";
 export type TaxResidency = "resident" | "nonResident";
 export type TaxProfileMode = "auto" | "manual";

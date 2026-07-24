@@ -1,5 +1,7 @@
 <script lang="ts">
   import ExpenseDonut from "./lib/components/ExpenseDonut.svelte";
+  import Icon from "./lib/components/Icon.svelte";
+  import MoneyInput from "./lib/components/MoneyInput.svelte";
   import { calculatePlan } from "./lib/planner/engine";
   import {
     clearPlanDraft,
@@ -43,7 +45,19 @@
       icon: "余",
       description: "Central flat, frequent outings",
     },
+    { name: "custom", icon: "定", description: "Start from scratch" },
   ];
+  const sectionIcons = {
+    income: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></g>`,
+    savingsAndBuffer: `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5-7h.01M2 8v1a2 2 0 0 0 2 2h1"/>`,
+    monthlyExpenses: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></g>`,
+    monthlySummary: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7m-7 5h7m-7 6h7m-7 5h7"/></g>`,
+    savingsForecast: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9l-5 5l-4-4l-3 3"/></g>`,
+    spendBreakdown: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></g>`,
+    incomeSplit: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 3h5v5M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6l6-6"/></g>`,
+    exchangeRate: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></g>`,
+  };
+
   const currencyOptions = Object.keys(currencyRates) as CurrencyCode[];
   const durationOptions: Array<{
     value: EmploymentDurationBand;
@@ -65,10 +79,11 @@
 
   function formatYen(amount: number): string {
     const rounded = Math.round(amount);
+    const formatted = Math.abs(rounded).toLocaleString("fr-FR").replace(/\u00a0/g, " ");
     if (rounded < 0) {
-      return `-¥${Math.abs(rounded).toLocaleString("en-US")}`;
+      return `-¥${formatted}`;
     }
-    return `¥${rounded.toLocaleString("en-US")}`;
+    return `¥${formatted}`;
   }
 
   function formatPercent(percent: number): string {
@@ -96,7 +111,7 @@
   }
 
   function updateIncome(value: string): void {
-    activePreset = null;
+    activePreset = "custom";
     planInput.income = clampNumber(value);
   }
 
@@ -105,7 +120,7 @@
   }
 
   function updateYearlyGrossIncome(value: string): void {
-    activePreset = null;
+    activePreset = "custom";
     planInput.yearlyGrossIncome = clampNumber(value);
   }
 
@@ -119,7 +134,7 @@
   }
 
   function updateHousehold(value: string): void {
-    activePreset = null;
+    activePreset = "custom";
     const next = Math.round(clampNumber(value, 1));
     planInput.household = Math.min(10, Math.max(1, next));
   }
@@ -147,7 +162,7 @@
   }
 
   function updateExpense(id: ExpenseId, value: string): void {
-    activePreset = null;
+    activePreset = "custom";
     planInput.expenses[id] = clampNumber(value);
   }
 
@@ -186,545 +201,599 @@
     activePreset = "balanced";
     saveStatus = "Live estimate";
   }
+
+  function allExpenseFields() {
+    return [
+      { group: "Fixed costs", fields: fixedExpenseFields },
+      { group: "Flexible costs", fields: flexibleExpenseFields },
+    ];
+  }
 </script>
 
-<main class="app-shell">
-  <section class="preset-row" aria-label="Lifestyle presets">
-    {#each presetOptions as preset (preset.name)}
-      <button
-        class={["preset-card", { active: activePreset === preset.name }]}
-        type="button"
-        onclick={() => applyPreset(preset.name)}
-      >
-        <span class="preset-icon">{preset.icon}</span>
-        <span>
-          <strong>{preset.name[0].toUpperCase() + preset.name.slice(1)}</strong>
-          <small>{preset.description}</small>
-        </span>
-      </button>
-    {/each}
-  </section>
-
-  <section class="workspace">
-    <div class="panel inputs-panel">
-      <div class="panel-heading">
-        <div>
-          <p class="section-kicker">YOUR MONTH</p>
-          <h2>Income and expenses</h2>
-        </div>
-        <div class="header-actions">
-          <button class="ghost-button" type="button" onclick={resetPlan}>Reset</button>
-          <button class="primary-button" type="button" onclick={savePlan}>Save plan</button>
-        </div>
+<div class="min-h-screen flex flex-col">
+  <!-- Toolbar -->
+  <header class="border-b border-gray-300 bg-white">
+    <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-3">
+      <div class="flex items-center gap-3">
+        <span class="text-lg font-semibold text-gray-900">Japan Cost of Living Planner</span>
+        <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{saveStatus}</span>
       </div>
-
-      <div class="form-grid">
-        <div class="field full">
-          <span>Income basis</span>
-          <div class="mode-toggle" role="group" aria-label="Income basis">
-            <button
-              type="button"
-              class={[
-                "mode-button",
-                { active: planInput.incomeMode === "monthlyTakeHome" },
-              ]}
-              onclick={() => updateIncomeMode("monthlyTakeHome")}
-            >
-              Monthly take-home
-            </button>
-            <button
-              type="button"
-              class={[
-                "mode-button",
-                { active: planInput.incomeMode === "yearlyGross" },
-              ]}
-              onclick={() => updateIncomeMode("yearlyGross")}
-            >
-              Yearly gross (before tax)
-            </button>
-          </div>
-        </div>
-
-        {#if planInput.incomeMode === "monthlyTakeHome"}
-          <label class="field">
-            <span>Monthly take-home pay</span>
-            <div class="money-input">
-              <span>¥</span>
-              <input
-                type="number"
-                min="0"
-                step="5000"
-                value={planInput.income}
-                oninput={(event) => updateIncome(inputValue(event))}
-              />
-            </div>
-          </label>
-        {:else}
-          <label class="field">
-            <span>Yearly gross income (before tax)</span>
-            <div class="money-input">
-              <span>¥</span>
-              <input
-                type="number"
-                min="0"
-                step="50000"
-                value={planInput.yearlyGrossIncome}
-                oninput={(event) => updateYearlyGrossIncome(inputValue(event))}
-              />
-            </div>
-          </label>
-        {/if}
-
-        <label class="field">
-          <span>People in household</span>
-          <div class="stepper">
-            <button type="button" onclick={() => stepHousehold(-1)}>−</button>
-            <input
-              type="number"
-              min="1"
-              max="10"
-              value={planInput.household}
-              oninput={(event) => updateHousehold(inputValue(event))}
-            />
-            <button type="button" onclick={() => stepHousehold(1)}>+</button>
-          </div>
-        </label>
-
-        {#if planInput.incomeMode === "yearlyGross"}
-          <div class="field full tax-grid">
-            <div class="field">
-              <span>Tax setup mode</span>
-              <div class="mode-toggle" role="group" aria-label="Tax setup mode">
-                <button
-                  type="button"
-                  class={[
-                    "mode-button",
-                    { active: planInput.taxAssumptions.profileMode === "auto" },
-                  ]}
-                  onclick={() => updateTaxProfileMode("auto")}
-                >
-                  Auto from duration
-                </button>
-                <button
-                  type="button"
-                  class={[
-                    "mode-button",
-                    {
-                      active: planInput.taxAssumptions.profileMode === "manual",
-                    },
-                  ]}
-                  onclick={() => updateTaxProfileMode("manual")}
-                >
-                  Manual
-                </button>
-              </div>
-            </div>
-
-            {#if planInput.taxAssumptions.profileMode === "auto"}
-              <label class="field">
-                <span>Duration of employment in Japan</span>
-                <select
-                  value={planInput.taxAssumptions.employmentDurationBand}
-                  onchange={(event) => updateDurationBand(selectValue(event))}
-                >
-                  {#each durationOptions as option (option.value)}
-                    <option value={option.value}>{option.label}</option>
-                  {/each}
-                </select>
-              </label>
-            {/if}
-
-            <label class="field">
-              <span>Tax residency assumption</span>
-              <select
-                value={planInput.taxAssumptions.residency}
-                onchange={(event) => updateTaxResidency(selectValue(event))}
-                disabled={planInput.taxAssumptions.profileMode === "auto"}
-              >
-                <option value="resident">Resident taxpayer</option>
-                <option value="nonResident">Non-resident taxpayer</option>
-              </select>
-            </label>
-
-            <label class="check-row">
-              <input
-                type="checkbox"
-                checked={planInput.taxAssumptions.firstYearInJapan}
-                onchange={(event) =>
-                  updateFirstYearInJapan(
-                    (event.currentTarget as HTMLInputElement).checked,
-                  )}
-                disabled={planInput.taxAssumptions.profileMode === "auto" ||
-                  planInput.taxAssumptions.residency === "nonResident"}
-              />
-              First year in Japan (no prior-year inhabitant tax assumed)
-            </label>
-          </div>
-        {/if}
-
-        <label class="field full">
-          <span>Home currency</span>
-          <select
-            value={planInput.currency}
-            onchange={(event) => updateCurrency(selectValue(event))}
-          >
-            {#each currencyOptions as currency (currency)}
-              <option value={currency}>{currency}</option>
-            {/each}
-          </select>
-        </label>
-      </div>
-
-      {#if planResult.takeHomeEstimate}
-        <div class="tax-note">
-          <strong
-            >Estimated monthly take-home: {formatYen(
-              planResult.effectiveMonthlyIncome,
-            )}</strong
-          >
-          <small>
-            Gross {formatYen(planResult.takeHomeEstimate.monthlyGross)} − income
-            tax {formatYen(planResult.takeHomeEstimate.monthlyIncomeTax)}
-            {#if planResult.takeHomeEstimate.monthlyResidentTax > 0}
-              − inhabitant tax {formatYen(
-                planResult.takeHomeEstimate.monthlyResidentTax,
-              )}
-            {/if}
-            − social insurance {formatYen(
-              planResult.takeHomeEstimate.monthlySocialInsurance,
-            )}
-            − employment insurance {formatYen(
-              planResult.takeHomeEstimate.monthlyEmploymentInsurance,
-            )}. Tax profile:
-            {planResult.takeHomeEstimate?.profileMode === "auto"
-              ? `Auto (${durationOptions.find((option) => option.value === planResult.takeHomeEstimate?.employmentDurationBand)?.label ?? "Duration based"})`
-              : "Manual"}
-            , residency {planResult.takeHomeEstimate?.appliedResidency ===
-            "resident"
-              ? "resident"
-              : "non-resident"}, first-year adjustment {planResult
-              .takeHomeEstimate?.appliedFirstYearInJapan
-              ? "on"
-              : "off"}, bracket {planResult.takeHomeEstimate?.taxBracketLabel ??
-              "n/a"} (marginal {formatRate(
-              planResult.takeHomeEstimate?.marginalIncomeTaxRate ?? 0,
-            )}). Assumptions: social {formatRate(
-              planInput.taxAssumptions.socialInsuranceRate,
-            )}, employment {formatRate(
-              planInput.taxAssumptions.employmentInsuranceRate,
-            )}, resident tax {formatRate(
-              planInput.taxAssumptions.residentTaxRate,
-            )}.
-          </small>
-        </div>
-      {/if}
-
-      <div class="divider"></div>
-      <div class="section-row">
-        <div>
-          <p class="section-kicker">SAVINGS</p>
-          <h3>Monthly savings target</h3>
-        </div>
-        <strong>{planInput.savingsGoalPercent}%</strong>
-      </div>
-      <div class="buffer-card">
-        <div>
-          <span>Save from take-home</span>
-          <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="70"
-          value={planInput.savingsGoalPercent}
-          oninput={(event) => updateSavingsGoalPercent(inputValue(event))}
-        />
-        <div class="range-labels">
-          <span>0%</span><span>35%</span><span>70%</span>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-      <div class="section-row">
-        <div>
-          <p class="section-kicker">FIXED COSTS</p>
-          <h3>Home and essentials</h3>
-        </div>
-        <span>Monthly</span>
-      </div>
-      <div class="cost-list">
-        {#each fixedExpenseFields as field (field.id)}
-          <div class="cost-row">
-            <div class="cost-label">
-              <span class="cost-icon">{field.icon}</span>
-              <div>
-                <strong>{field.label}</strong>
-                <small>{field.description}</small>
-              </div>
-            </div>
-            <div class="money-input">
-              <span>¥</span>
-              <input
-                type="number"
-                min="0"
-                step={field.step}
-                value={planInput.expenses[field.id]}
-                oninput={(event) => updateExpense(field.id, inputValue(event))}
-              />
-            </div>
-          </div>
-        {/each}
-      </div>
-
-      <div class="section-row spaced">
-        <div>
-          <p class="section-kicker">FLEXIBLE COSTS</p>
-          <h3>Daily life</h3>
-        </div>
-        <span>Monthly</span>
-      </div>
-      <div class="cost-list">
-        {#each flexibleExpenseFields as field (field.id)}
-          <div class="cost-row">
-            <div class="cost-label">
-              <span class="cost-icon">{field.icon}</span>
-              <div>
-                <strong>{field.label}</strong>
-                <small>{field.description}</small>
-              </div>
-            </div>
-            <div class="money-input">
-              <span>¥</span>
-              <input
-                type="number"
-                min="0"
-                step={field.step}
-                value={planInput.expenses[field.id]}
-                oninput={(event) => updateExpense(field.id, inputValue(event))}
-              />
-            </div>
-          </div>
-        {/each}
-      </div>
-
-      <div class="buffer-card">
-        <div>
-          <span>Unexpected-expense buffer</span>
-          <strong>{planInput.bufferPercent}%</strong>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="20"
-          value={planInput.bufferPercent}
-          oninput={(event) => updateBuffer(inputValue(event))}
-        />
-        <div class="range-labels">
-          <span>0%</span><span>10%</span><span>20%</span>
-        </div>
-      </div>
-    </div>
-
-    <aside class="panel results-panel">
-      <p class="section-kicker light">Monthly commitment</p>
-      <div class="total-yen">
-        <span class="total-value">{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</span><span class="total-unit"
-          >/ month</span
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          onclick={resetPlan}
         >
+          Reset
+        </button>
+        <button
+          type="button"
+          class="rounded border border-blue-600 bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
+          onclick={savePlan}
+        >
+          Save plan
+        </button>
       </div>
-      {#if planResult.savingsGoalGap >= 0}
-        <p class="outlook-summary">
-          That's {formatPercent(((planResult.monthlySpend + planResult.targetMonthlySavings) / planResult.effectiveMonthlyIncome) * 100)} of your {formatYen(
-            planResult.effectiveMonthlyIncome,
-          )} take-home, leaving
-          <strong>{formatYen(planResult.savingsGoalGap)}</strong> remaining each month.
-        </p>
-      {:else}
-        <p class="outlook-summary over">
-          That's {formatPercent(((planResult.monthlySpend + planResult.targetMonthlySavings) / planResult.effectiveMonthlyIncome) * 100)} of your {formatYen(
-            planResult.effectiveMonthlyIncome,
-          )} take-home, over budget by
-          <strong>{formatYen(Math.abs(planResult.savingsGoalGap))}</strong> each
-          month.
-        </p>
-      {/if}
-      <p class="exchange-note">
-        Total monthly commitment = base expenses + buffer + savings target
-      </p>
-      <div class="spend-breakdown">
-        {#each [...fixedExpenseFields, ...flexibleExpenseFields] as field (field.id)}
-          <div>
-            <span>{field.label}</span>
-            <strong>{formatYen(planInput.expenses[field.id])}</strong>
-          </div>
-        {/each}
-        <div style="border-top: 1px solid #ffffff30; padding-top: 6px; margin-top: 4px;">
-          <span>Base expenses subtotal</span>
-          <strong>{formatYen(planResult.baseExpenses)}</strong>
-        </div>
-        <div>
-          <span>Buffer ({planInput.bufferPercent}%)</span>
-          <strong
-            >{formatYen(
-              planResult.monthlySpend - planResult.baseExpenses,
-            )}</strong
-          >
-        </div>
-        <div>
-          <span>Savings target ({planInput.savingsGoalPercent}%)</span>
-          <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
-        </div>
-        <div style="border-top: 1px solid #ffffff30; padding-top: 6px; margin-top: 4px;">
-          <span><strong>Total committed</strong></span>
-          <strong>{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</strong>
-        </div>
-        <div>
-          <span><strong>Remaining</strong></span>
-          <strong>{formatYen(planResult.savingsGoalGap)}</strong>
-        </div>
-      </div>
-      <div class="summary-stats three">
-        <div>
-          <span>Take-home income</span><strong
-            >{formatYen(planResult.effectiveMonthlyIncome)}</strong
-          >
-        </div>
-        <div>
-          <span>Expenses + buffer</span><strong
-            >{formatYen(planResult.monthlySpend)}</strong
-          >
-        </div>
-        <div>
-          <span>Savings target ({planInput.savingsGoalPercent}%)</span><strong
-            >{formatYen(planResult.targetMonthlySavings)}</strong
-          >
-        </div>
-        <div>
-          <span>Total committed</span><strong
-            >{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</strong
-          >
-        </div>
-        <div>
-          <span>Remaining monthly</span><strong
-            >{formatYen(planResult.savingsGoalGap)}</strong
-          >
-        </div>
-        <div>
-          <span>Remaining annual</span><strong
-            >{formatYen(planResult.savingsGoalGap * 12)}</strong
-          >
-        </div>
-      </div>
-
-      <div class="progress-block">
-        <div>
-          <span>Income used</span><strong
-            >{formatPercent(planResult.incomeUsedRate)}</strong
-          >
-        </div>
-        <div class="progress-track">
-          <span style={`width:${Math.min(100, planResult.incomeUsedRate)}%`}
-          ></span>
-        </div>
-      </div>
-
-      <ExpenseDonut
-        slices={planResult.chartSlices}
-        total={planResult.monthlySpend}
-      />
-
-      <div class="legend">
-        {#each planResult.chartSlices as slice (slice.name)}
-          <div class="legend-item">
-            <span><i style={`background:${slice.color}`}></i>{slice.name}</span>
-            <strong
-              >{Math.round(
-                (slice.amount / Math.max(planResult.monthlySpend, 1)) * 100,
-              )}%</strong
-            >
-          </div>
-        {/each}
-      </div>
-
-      <div class="income-split-card">
-        <strong>Income split</strong>
-        {#each planResult.incomeSplit as split (split.name)}
-          <div class="split-row">
-            <span>{split.name}</span>
-            <span>{formatPercent(split.percentOfIncome)}</span>
-          </div>
-          <div class="split-track">
-            <span
-              style={`width:${Math.min(100, split.percentOfIncome)}%;background:${split.color}`}
-            ></span>
-          </div>
-        {/each}
-      </div>
-
-      <div class="rate-box">
-        <label for="exchange-rate-input">1 JPY equals</label>
-        <div>
-          <input
-            id="exchange-rate-input"
-            type="number"
-            min="0"
-            step="0.0001"
-            value={planInput.exchangeRate}
-            oninput={(event) => updateExchangeRate(inputValue(event))}
-          />
-          <span>{planInput.currency}</span>
-        </div>
-      </div>
-      <div class="insight-card">
-        <span class="insight-symbol">↗</span>
-        <div>
-          <strong>Planning insight</strong>
-          <p>{planResult.insight}</p>
-        </div>
-      </div>
-    </aside>
-  </section>
-
-  <section class="projection-section">
-    <div class="tips-heading">
-      <div>
-        <p class="section-kicker">SAVINGS FORECAST</p>
-        <h2>What this means over time</h2>
-      </div>
-      <p>
-        These projections assume your income and monthly expenses stay constant.
-        Change any input above to test another scenario.
-      </p>
     </div>
-    <div class="projection-grid">
-      <article>
-        <span>3 months</span><strong
-          >{formatYen(planResult.threeMonthSavings)}</strong
-        ><small>Potential savings</small>
-      </article>
-      <article>
-        <span>6 months</span><strong
-          >{formatYen(planResult.sixMonthSavings)}</strong
-        ><small>Potential savings</small>
-      </article>
-      <article>
-        <span>12 months</span><strong
-          >{formatYen(planResult.twelveMonthSavings)}</strong
-        ><small>Potential savings</small>
-      </article>
-      <article>
-        <span>Daily allowance</span><strong
-          >{formatYen(planResult.dailyFlexibleAllowance)}</strong
-        ><small>Flexible spending per day, per person</small>
-      </article>
-    </div>
-  </section>
-</main>
+  </header>
 
-<footer>
-  <span>Tokyo Monthly Living Planner</span>
-  <span
-    >All figures are planning assumptions. Gross-to-net mode uses simplified tax
-    rules and should be verified against official notices.</span
-  >
-</footer>
+  <!-- Preset tabs -->
+  <nav class="border-b border-gray-300 bg-gray-50 px-4">
+    <div class="flex gap-1">
+      <span class="flex items-center px-2 py-2 text-xs font-semibold text-gray-500 uppercase">Preset</span>
+      {#each presetOptions as preset (preset.name)}
+        <button
+          type="button"
+          class={[
+            "border-b-2 px-4 py-2 text-xs font-medium",
+            activePreset === preset.name
+              ? "border-blue-600 bg-white text-blue-700"
+              : "border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+          ]}
+          onclick={() => applyPreset(preset.name)}
+        >
+          <span class="mr-1">{preset.icon}</span>
+          {preset.name[0].toUpperCase() + preset.name.slice(1)}
+        </button>
+      {/each}
+    </div>
+  </nav>
+
+  <main class="flex-1 overflow-auto p-4">
+    <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
+      <!-- Spreadsheet -->
+      <section class="lg:col-span-2 space-y-6">
+        <!-- Income section -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.income} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Income</span>
+          </div>
+          <table class="w-full border-collapse text-sm">
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="w-1/3 border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Income basis</td>
+                <td class="border border-gray-300 px-3 py-2">
+                  <div class="flex gap-1">
+                    <button
+                      type="button"
+                      class={[
+                        "rounded border px-3 py-1 text-xs font-medium",
+                        planInput.incomeMode === "monthlyTakeHome"
+                          ? "border-blue-600 bg-blue-50 text-blue-700"
+                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                      ]}
+                      onclick={() => updateIncomeMode("monthlyTakeHome")}
+                    >
+                      Monthly take-home
+                    </button>
+                    <button
+                      type="button"
+                      class={[
+                        "rounded border px-3 py-1 text-xs font-medium",
+                        planInput.incomeMode === "yearlyGross"
+                          ? "border-blue-600 bg-blue-50 text-blue-700"
+                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                      ]}
+                      onclick={() => updateIncomeMode("yearlyGross")}
+                    >
+                      Yearly gross (before tax)
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              {#if planInput.incomeMode === "monthlyTakeHome"}
+                <tr>
+                  <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Monthly take-home pay</td>
+                  <td class="border border-gray-300 px-3 py-2">
+                    <MoneyInput
+                      value={planInput.income}
+                      min={0}
+                      step={5000}
+                      onchange={updateIncome}
+                    />
+                  </td>
+                </tr>
+              {:else}
+                <tr>
+                  <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Yearly gross income</td>
+                  <td class="border border-gray-300 px-3 py-2">
+                    <MoneyInput
+                      value={planInput.yearlyGrossIncome}
+                      min={0}
+                      step={50000}
+                      onchange={updateYearlyGrossIncome}
+                    />
+                  </td>
+                </tr>
+              {/if}
+
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">People in household</td>
+                <td class="border border-gray-300 px-3 py-2">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      class="rounded border border-gray-300 px-2 py-0.5 text-xs hover:bg-gray-50"
+                      onclick={() => stepHousehold(-1)}
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={planInput.household}
+                      oninput={(event) => updateHousehold(inputValue(event))}
+                      class="cell-input w-16"
+                    />
+                    <button
+                      type="button"
+                      class="rounded border border-gray-300 px-2 py-0.5 text-xs hover:bg-gray-50"
+                      onclick={() => stepHousehold(1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              {#if planInput.incomeMode === "yearlyGross"}
+                <tr>
+                  <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Tax setup mode</td>
+                  <td class="border border-gray-300 px-3 py-2">
+                    <div class="flex gap-1">
+                      <button
+                        type="button"
+                        class={[
+                          "rounded border px-3 py-1 text-xs font-medium",
+                          planInput.taxAssumptions.profileMode === "auto"
+                            ? "border-blue-600 bg-blue-50 text-blue-700"
+                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                        ]}
+                        onclick={() => updateTaxProfileMode("auto")}
+                      >
+                        Auto from duration
+                      </button>
+                      <button
+                        type="button"
+                        class={[
+                          "rounded border px-3 py-1 text-xs font-medium",
+                          planInput.taxAssumptions.profileMode === "manual"
+                            ? "border-blue-600 bg-blue-50 text-blue-700"
+                            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                        ]}
+                        onclick={() => updateTaxProfileMode("manual")}
+                      >
+                        Manual
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                {#if planInput.taxAssumptions.profileMode === "auto"}
+                  <tr>
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Duration in Japan</td>
+                    <td class="border border-gray-300 px-3 py-2">
+                      <select
+                        value={planInput.taxAssumptions.employmentDurationBand}
+                        onchange={(event) => updateDurationBand(selectValue(event))}
+                        class="cell-select"
+                      >
+                        {#each durationOptions as option (option.value)}
+                          <option value={option.value}>{option.label}</option>
+                        {/each}
+                      </select>
+                    </td>
+                  </tr>
+                {/if}
+
+                <tr>
+                  <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Tax residency</td>
+                  <td class="border border-gray-300 px-3 py-2">
+                    <select
+                      value={planInput.taxAssumptions.residency}
+                      onchange={(event) => updateTaxResidency(selectValue(event))}
+                      disabled={planInput.taxAssumptions.profileMode === "auto"}
+                      class="cell-select disabled:bg-gray-100 disabled:text-gray-500"
+                    >
+                      <option value="resident">Resident taxpayer</option>
+                      <option value="nonResident">Non-resident taxpayer</option>
+                    </select>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">First year in Japan</td>
+                  <td class="border border-gray-300 px-3 py-2">
+                    <label class="flex items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={planInput.taxAssumptions.firstYearInJapan}
+                        onchange={(event) =>
+                          updateFirstYearInJapan(
+                            (event.currentTarget as HTMLInputElement).checked,
+                          )}
+                        disabled={planInput.taxAssumptions.profileMode === "auto" ||
+                          planInput.taxAssumptions.residency === "nonResident"}
+                        class="rounded border-gray-300"
+                      />
+                      No prior-year inhabitant tax assumed
+                    </label>
+                  </td>
+                </tr>
+
+                {#if planResult.takeHomeEstimate}
+                  <tr>
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Estimated take-home</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold text-gray-900">
+                      {formatYen(planResult.effectiveMonthlyIncome)}
+                    </td>
+                  </tr>
+                {/if}
+              {/if}
+
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Home currency</td>
+                <td class="border border-gray-300 px-3 py-2">
+                  <select
+                    value={planInput.currency}
+                    onchange={(event) => updateCurrency(selectValue(event))}
+                    class="cell-select"
+                  >
+                    {#each currencyOptions as currency (currency)}
+                      <option value={currency}>{currency}</option>
+                    {/each}
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {#if planResult.takeHomeEstimate}
+            <div class="border-t border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+              Gross {formatYen(planResult.takeHomeEstimate.monthlyGross)} − income tax {formatYen(planResult.takeHomeEstimate.monthlyIncomeTax)}
+              {#if planResult.takeHomeEstimate.monthlyResidentTax > 0}
+                − inhabitant tax {formatYen(planResult.takeHomeEstimate.monthlyResidentTax)}
+              {/if}
+              − social insurance {formatYen(planResult.takeHomeEstimate.monthlySocialInsurance)}
+              − employment insurance {formatYen(planResult.takeHomeEstimate.monthlyEmploymentInsurance)}.
+              Profile {planResult.takeHomeEstimate?.profileMode === "auto" ? "auto" : "manual"}, residency {planResult.takeHomeEstimate?.appliedResidency}, bracket {planResult.takeHomeEstimate?.taxBracketLabel}.
+            </div>
+          {/if}
+        </div>
+
+        <!-- Savings and buffer section -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.savingsAndBuffer} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Savings &amp; buffer</span>
+          </div>
+          <table class="w-full border-collapse text-sm">
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="w-1/3 border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Savings goal</td>
+                <td class="border border-gray-300 px-3 py-2">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="70"
+                      value={planInput.savingsGoalPercent}
+                      oninput={(event) => updateSavingsGoalPercent(inputValue(event))}
+                      class="flex-1"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="70"
+                      value={planInput.savingsGoalPercent}
+                      oninput={(event) => updateSavingsGoalPercent(inputValue(event))}
+                      class="cell-input w-20"
+                    />
+                    <span class="text-gray-500">%</span>
+                  </div>
+                </td>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.targetMonthlySavings)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Unexpected buffer</td>
+                <td class="border border-gray-300 px-3 py-2">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="20"
+                      value={planInput.bufferPercent}
+                      oninput={(event) => updateBuffer(inputValue(event))}
+                      class="flex-1"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={planInput.bufferPercent}
+                      oninput={(event) => updateBuffer(inputValue(event))}
+                      class="cell-input w-20"
+                    />
+                    <span class="text-gray-500">%</span>
+                  </div>
+                </td>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.monthlySpend - planResult.baseExpenses)}
+                </td>
+              </tr>
+              <tr class="bg-gray-100 font-semibold">
+                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-700">
+                  Savings + buffer subtotal
+                </td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(
+                    planResult.targetMonthlySavings +
+                      (planResult.monthlySpend - planResult.baseExpenses),
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Expenses section -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.monthlyExpenses} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Monthly expenses</span>
+          </div>
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Category
+                </th>
+                <th class="border border-gray-300 bg-gray-100 px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Description
+                </th>
+                <th class="w-40 border border-gray-300 bg-gray-100 px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {#each allExpenseFields() as group (group.group)}
+                <tr>
+                  <td
+                    colspan="3"
+                    class="border border-gray-300 bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase text-gray-600"
+                  >
+                    {group.group}
+                  </td>
+                </tr>
+                {#each group.fields as field (field.id)}
+                  <tr class="hover:bg-gray-50">
+                    <td class="border border-gray-300 px-3 py-2 font-medium text-gray-800">
+                      <span class="mr-2 text-gray-500">{field.icon}</span>{field.label}
+                    </td>
+                    <td class="border border-gray-300 px-3 py-2 text-xs text-gray-500">
+                      {field.description}
+                    </td>
+                    <td class="border border-gray-300 px-3 py-2">
+                      <MoneyInput
+                        value={planInput.expenses[field.id]}
+                        min={0}
+                        step={field.step}
+                        onchange={(value) => updateExpense(field.id, value)}
+                      />
+                    </td>
+                  </tr>
+                {/each}
+              {/each}
+              <tr class="bg-gray-100 font-semibold">
+                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-700">Base expenses subtotal</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.baseExpenses)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Summary panel -->
+      <aside class="space-y-6">
+        <!-- Summary table -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.monthlySummary} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Monthly summary</span>
+          </div>
+          <table class="w-full border-collapse text-sm">
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Effective income</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold">
+                  {formatYen(planResult.effectiveMonthlyIncome)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Base expenses</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.baseExpenses)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Buffer ({planInput.bufferPercent}%)</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.monthlySpend - planResult.baseExpenses)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Savings target ({planInput.savingsGoalPercent}%)</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.targetMonthlySavings)}
+                </td>
+              </tr>
+              <tr class="bg-gray-100 font-semibold">
+                <td class="border border-gray-300 px-3 py-2 text-gray-900">Total committed</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}
+                </td>
+              </tr>
+              <tr class={planResult.savingsGoalGap >= 0 ? "bg-green-50" : "bg-red-50"}>
+                <td class="border border-gray-300 px-3 py-2 font-semibold {planResult.savingsGoalGap >= 0 ? 'text-green-800' : 'text-red-800'}">
+                  {planResult.savingsGoalGap >= 0 ? "Remaining" : "Over budget"}
+                </td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold {planResult.savingsGoalGap >= 0 ? 'text-green-700' : 'text-red-700'}">
+                  {formatYen(planResult.savingsGoalGap)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Income used</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatPercent(planResult.incomeUsedRate)}
+                </td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Daily allowance</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                  {formatYen(planResult.dailyFlexibleAllowance)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Projections -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.savingsForecast} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Savings forecast</span>
+          </div>
+          <table class="w-full border-collapse text-sm">
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">3 months</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.threeMonthSavings)}</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">6 months</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.sixMonthSavings)}</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">12 months</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.twelveMonthSavings)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Chart -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.spendBreakdown} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Spend breakdown</span>
+          </div>
+          <div class="p-4">
+            <ExpenseDonut
+              slices={planResult.chartSlices}
+              total={planResult.monthlySpend}
+            />
+            <div class="mt-4 grid grid-cols-2 gap-1 text-xs">
+              {#each planResult.chartSlices as slice (slice.name)}
+                <div class="flex items-center gap-2">
+                  <span class="inline-block h-3 w-3 rounded-sm" style={`background:${slice.color}`}></span>
+                  <span class="text-gray-600">{slice.name}</span>
+                  <span class="ml-auto font-mono">
+                    {Math.round((slice.amount / Math.max(planResult.monthlySpend, 1)) * 100)}%
+                  </span>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
+
+        <!-- Income split -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.incomeSplit} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Income split</span>
+          </div>
+          <div class="space-y-2 p-3 text-xs">
+            {#each planResult.incomeSplit as split (split.name)}
+              <div>
+                <div class="flex justify-between">
+                  <span class="text-gray-700">{split.name}</span>
+                  <span class="font-mono">{formatPercent(split.percentOfIncome)}</span>
+                </div>
+                <div class="mt-1 h-2 w-full bg-gray-200">
+                  <div
+                    class="h-2"
+                    style={`width:${Math.min(100, split.percentOfIncome)}%;background:${split.color}`}
+                  ></div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Exchange rate -->
+        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
+            <Icon svg={sectionIcons.exchangeRate} class="h-5 w-5 text-gray-600" />
+            <span class="text-xs font-semibold uppercase text-gray-600">Exchange rate</span>
+          </div>
+          <div class="p-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-600">1 JPY =</span>
+              <input
+                id="exchange-rate-input"
+                type="number"
+                min="0"
+                step="0.0001"
+                value={planInput.exchangeRate}
+                oninput={(event) => updateExchangeRate(inputValue(event))}
+                class="cell-input w-28"
+              />
+              <span class="text-xs font-medium text-gray-700">{planInput.currency}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insight -->
+        <div class="rounded border border-gray-300 bg-white p-3 text-xs text-gray-600">
+          <strong class="block text-gray-800">Planning insight</strong>
+          <p class="mt-1">{planResult.insight}</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="border-t border-gray-300 bg-gray-100 px-4 py-2 text-xs text-gray-600">
+    <div class="flex flex-wrap justify-between gap-2">
+      <span>Japan Cost of Living Planner</span>
+      <span>Figures are planning assumptions. Gross-to-net mode uses simplified tax rules.</span>
+    </div>
+  </footer>
+</div>

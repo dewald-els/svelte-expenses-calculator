@@ -1,0 +1,7 @@
+import { mount } from "/node_modules/.vite/deps/svelte.js?v=f0febbb6";
+import "/src/app.css?t=1784920937219";
+import App from "/src/App.svelte?t=1784920937219";
+const app = mount(App, { target: document.getElementById("app") });
+export default app;
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBQUEsU0FBUyxhQUFhO0FBQ3RCLE9BQU87QUFDUCxPQUFPLFNBQVM7QUFFaEIsTUFBTSxNQUFNLE1BQU0sS0FBSyxFQUNyQixRQUFRLFNBQVMsZUFBZSxLQUFLLEVBQ3ZDLENBQUM7QUFFRCxlQUFlIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIm1haW4udHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgbW91bnQgfSBmcm9tICdzdmVsdGUnXG5pbXBvcnQgJy4vYXBwLmNzcydcbmltcG9ydCBBcHAgZnJvbSAnLi9BcHAuc3ZlbHRlJ1xuXG5jb25zdCBhcHAgPSBtb3VudChBcHAsIHtcbiAgdGFyZ2V0OiBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnYXBwJykhLFxufSlcblxuZXhwb3J0IGRlZmF1bHQgYXBwXG4iXX0=
