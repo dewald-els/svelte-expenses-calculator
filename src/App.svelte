@@ -11,14 +11,12 @@
   import {
     computePresetExpenses,
     createDefaultPlanInput,
-    currencyRates,
     findMatchingPresetName,
     presetExpenses,
   } from "./lib/planner/presets";
   import {
     fixedExpenseFields,
     flexibleExpenseFields,
-    type CurrencyCode,
     type EmploymentDurationBand,
     type ExpenseId,
     type IncomeInputMode,
@@ -55,10 +53,8 @@
     savingsForecast: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9l-5 5l-4-4l-3 3"/></g>`,
     spendBreakdown: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/></g>`,
     incomeSplit: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 3h5v5M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6l6-6"/></g>`,
-    exchangeRate: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></g>`,
+    taxBreakdown: `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2zm-10-2h.01M12 7v4"/>`,
   };
-
-  const currencyOptions = Object.keys(currencyRates) as CurrencyCode[];
   const durationOptions: Array<{
     value: EmploymentDurationBand;
     label: string;
@@ -141,16 +137,6 @@
 
   function stepHousehold(direction: number): void {
     updateHousehold(String(planInput.household + direction));
-  }
-
-  function updateCurrency(value: string): void {
-    const currency = value as CurrencyCode;
-    planInput.currency = currency;
-    planInput.exchangeRate = currencyRates[currency] ?? planInput.exchangeRate;
-  }
-
-  function updateExchangeRate(value: string): void {
-    planInput.exchangeRate = clampNumber(value);
   }
 
   function updateTaxResidency(value: string): void {
@@ -265,9 +251,9 @@
       <section class="lg:col-span-2 space-y-6">
         <!-- Income section -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.income} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Income</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.income} class="h-5 w-5 text-blue-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Income</span>
           </div>
           <table class="w-full border-collapse text-sm">
             <tbody class="divide-y divide-gray-200">
@@ -454,41 +440,35 @@
                 {/if}
               {/if}
 
-              <tr>
-                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Home currency</td>
-                <td class="border border-gray-300 px-3 py-2">
-                  <select
-                    value={planInput.currency}
-                    onchange={(event) => updateCurrency(selectValue(event))}
-                    class="cell-select"
-                  >
-                    {#each currencyOptions as currency (currency)}
-                      <option value={currency}>{currency}</option>
-                    {/each}
-                  </select>
-                </td>
-              </tr>
             </tbody>
           </table>
-
-          {#if planResult.takeHomeEstimate}
-            <div class="border-t border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-              Gross {formatYen(planResult.takeHomeEstimate.monthlyGross)} − income tax {formatYen(planResult.takeHomeEstimate.monthlyIncomeTax)}
-              {#if planResult.takeHomeEstimate.monthlyResidentTax > 0}
-                − inhabitant tax {formatYen(planResult.takeHomeEstimate.monthlyResidentTax)}
-              {/if}
-              − social insurance {formatYen(planResult.takeHomeEstimate.monthlySocialInsurance)}
-              − employment insurance {formatYen(planResult.takeHomeEstimate.monthlyEmploymentInsurance)}.
-              Profile {planResult.takeHomeEstimate?.profileMode === "auto" ? "auto" : "manual"}, residency {planResult.takeHomeEstimate?.appliedResidency}, bracket {planResult.takeHomeEstimate?.taxBracketLabel}.
-            </div>
-          {/if}
         </div>
+
+        {#if planResult.takeHomeEstimate}
+          <div class="flex gap-3 rounded border border-gray-300 bg-white p-3 text-xs text-gray-600">
+            <div class="flex items-center justify-center px-3">
+              <Icon svg={sectionIcons.taxBreakdown} class="h-6 w-6 shrink-0 text-indigo-600" />
+            </div>
+            <div>
+              <strong class="mb-1 block text-gray-800">Tax breakdown</strong>
+              <p>
+                Gross {formatYen(planResult.takeHomeEstimate.monthlyGross)} − income tax {formatYen(planResult.takeHomeEstimate.monthlyIncomeTax)}
+                {#if planResult.takeHomeEstimate.monthlyResidentTax > 0}
+                  − inhabitant tax {formatYen(planResult.takeHomeEstimate.monthlyResidentTax)}
+                {/if}
+                − social insurance {formatYen(planResult.takeHomeEstimate.monthlySocialInsurance)}
+                − employment insurance {formatYen(planResult.takeHomeEstimate.monthlyEmploymentInsurance)}.
+                Profile {planResult.takeHomeEstimate?.profileMode === "auto" ? "auto" : "manual"}, residency {planResult.takeHomeEstimate?.appliedResidency}, bracket {planResult.takeHomeEstimate?.taxBracketLabel}.
+              </p>
+            </div>
+          </div>
+        {/if}
 
         <!-- Savings and buffer section -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.savingsAndBuffer} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Savings &amp; buffer</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.savingsAndBuffer} class="h-5 w-5 text-green-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Savings &amp; buffer</span>
           </div>
           <table class="w-full border-collapse text-sm">
             <tbody class="divide-y divide-gray-200">
@@ -546,8 +526,8 @@
                   {formatYen(planResult.monthlySpend - planResult.baseExpenses)}
                 </td>
               </tr>
-              <tr class="bg-gray-100 font-semibold">
-                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-700">
+              <tr class="bg-gray-200 font-bold">
+                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-900">
                   Savings + buffer subtotal
                 </td>
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">
@@ -563,20 +543,20 @@
 
         <!-- Expenses section -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.monthlyExpenses} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Monthly expenses</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.monthlyExpenses} class="h-5 w-5 text-orange-500" />
+            <span class="text-xs font-bold uppercase text-gray-800">Monthly expenses</span>
           </div>
           <table class="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th class="border border-gray-300 bg-gray-200 px-4 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">
                   Category
                 </th>
-                <th class="border border-gray-300 bg-gray-100 px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th class="border border-gray-300 bg-gray-200 px-4 py-3 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">
                   Description
                 </th>
-                <th class="w-40 border border-gray-300 bg-gray-100 px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th class="w-40 border border-gray-300 bg-gray-200 px-4 py-3 text-right text-xs font-bold text-gray-800 uppercase tracking-wider">
                   Amount
                 </th>
               </tr>
@@ -586,13 +566,13 @@
                 <tr>
                   <td
                     colspan="3"
-                    class="border border-gray-300 bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase text-gray-600"
+                    class="border border-gray-300 bg-gray-200 px-3 py-2 text-xs font-bold uppercase text-gray-800"
                   >
                     {group.group}
                   </td>
                 </tr>
                 {#each group.fields as field (field.id)}
-                  <tr class="hover:bg-gray-50">
+                  <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
                     <td class="border border-gray-300 px-3 py-2 font-medium text-gray-800">
                       <span class="mr-2 text-gray-500">{field.icon}</span>{field.label}
                     </td>
@@ -610,8 +590,8 @@
                   </tr>
                 {/each}
               {/each}
-              <tr class="bg-gray-100 font-semibold">
-                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-700">Base expenses subtotal</td>
+              <tr class="bg-gray-200 font-bold">
+                <td colspan="2" class="border border-gray-300 px-3 py-2 text-gray-900">Base expenses subtotal</td>
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">
                   {formatYen(planResult.baseExpenses)}
                 </td>
@@ -625,9 +605,9 @@
       <aside class="space-y-6">
         <!-- Summary table -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.monthlySummary} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Monthly summary</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.monthlySummary} class="h-5 w-5 text-yellow-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Monthly summary</span>
           </div>
           <table class="w-full border-collapse text-sm">
             <tbody class="divide-y divide-gray-200">
@@ -655,7 +635,7 @@
                   {formatYen(planResult.targetMonthlySavings)}
                 </td>
               </tr>
-              <tr class="bg-gray-100 font-semibold">
+              <tr class="bg-gray-200 font-bold">
                 <td class="border border-gray-300 px-3 py-2 text-gray-900">Total committed</td>
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">
                   {formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}
@@ -676,7 +656,10 @@
                 </td>
               </tr>
               <tr>
-                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Daily allowance</td>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">
+                  Daily allowance
+                  <span class="block text-xs font-normal text-gray-500">Per person</span>
+                </td>
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">
                   {formatYen(planResult.dailyFlexibleAllowance)}
                 </td>
@@ -687,9 +670,9 @@
 
         <!-- Projections -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.savingsForecast} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Savings forecast</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.savingsForecast} class="h-5 w-5 text-green-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Savings forecast</span>
           </div>
           <table class="w-full border-collapse text-sm">
             <tbody class="divide-y divide-gray-200">
@@ -702,8 +685,16 @@
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.sixMonthSavings)}</td>
               </tr>
               <tr>
-                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">12 months</td>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">1 year</td>
                 <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.twelveMonthSavings)}</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">5 years</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.fiveYearSavings)}</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">10 years</td>
+                <td class="border border-gray-300 px-3 py-2 text-right font-mono">{formatYen(planResult.tenYearSavings)}</td>
               </tr>
             </tbody>
           </table>
@@ -711,23 +702,29 @@
 
         <!-- Chart -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.spendBreakdown} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Spend breakdown</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.spendBreakdown} class="h-5 w-5 text-blue-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Spend breakdown</span>
           </div>
           <div class="p-4">
             <ExpenseDonut
               slices={planResult.chartSlices}
               total={planResult.monthlySpend}
             />
-            <div class="mt-4 grid grid-cols-2 gap-1 text-xs">
+            <div class="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
               {#each planResult.chartSlices as slice (slice.name)}
-                <div class="flex items-center gap-2">
-                  <span class="inline-block h-3 w-3 rounded-sm" style={`background:${slice.color}`}></span>
-                  <span class="text-gray-600">{slice.name}</span>
-                  <span class="ml-auto font-mono">
-                    {Math.round((slice.amount / Math.max(planResult.monthlySpend, 1)) * 100)}%
-                  </span>
+                {@const percent = Math.round(
+                  (slice.amount / Math.max(planResult.monthlySpend, 1)) * 100,
+                )}
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex min-w-0 items-center gap-2">
+                    <span
+                      class="inline-block h-3 w-3 shrink-0 rounded-sm"
+                      style={`background:${slice.color}`}
+                    ></span>
+                    <span class="truncate text-gray-600">{slice.name}</span>
+                  </div>
+                  <span class="font-mono tabular-nums">{percent}%</span>
                 </div>
               {/each}
             </div>
@@ -736,9 +733,9 @@
 
         <!-- Income split -->
         <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.incomeSplit} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Income split</span>
+          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-200 px-4 py-2">
+            <Icon svg={sectionIcons.incomeSplit} class="h-5 w-5 text-teal-600" />
+            <span class="text-xs font-bold uppercase text-gray-800">Income split</span>
           </div>
           <div class="space-y-2 p-3 text-xs">
             {#each planResult.incomeSplit as split (split.name)}
@@ -758,33 +755,15 @@
           </div>
         </div>
 
-        <!-- Exchange rate -->
-        <div class="overflow-hidden overflow-x-auto rounded border border-gray-300 bg-white">
-          <div class="flex items-center gap-2 border-b border-gray-300 bg-gray-100 px-3 py-1.5">
-            <Icon svg={sectionIcons.exchangeRate} class="h-5 w-5 text-gray-600" />
-            <span class="text-xs font-semibold uppercase text-gray-600">Exchange rate</span>
-          </div>
-          <div class="p-3">
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-600">1 JPY =</span>
-              <input
-                id="exchange-rate-input"
-                type="number"
-                min="0"
-                step="0.0001"
-                value={planInput.exchangeRate}
-                oninput={(event) => updateExchangeRate(inputValue(event))}
-                class="cell-input w-28"
-              />
-              <span class="text-xs font-medium text-gray-700">{planInput.currency}</span>
-            </div>
-          </div>
-        </div>
-
         <!-- Insight -->
-        <div class="rounded border border-gray-300 bg-white p-3 text-xs text-gray-600">
-          <strong class="block text-gray-800">Planning insight</strong>
-          <p class="mt-1">{planResult.insight}</p>
+        <div class="flex gap-3 rounded border border-gray-300 bg-white p-3 text-xs text-gray-600">
+          <div class="flex items-center justify-center px-3">
+            <Icon svg={sectionIcons.taxBreakdown} class="h-6 w-6 shrink-0 text-indigo-600" />
+          </div>
+          <div>
+            <strong class="mb-1 block text-gray-800">Planning insight</strong>
+            <p>{planResult.insight}</p>
+          </div>
         </div>
       </aside>
     </div>

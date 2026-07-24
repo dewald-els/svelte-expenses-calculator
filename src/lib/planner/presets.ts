@@ -1,19 +1,8 @@
 import type {
-  CurrencyCode,
   ExpenseId,
   LifestylePresetName,
   PlanInput,
 } from "./types";
-
-export const currencyRates: Record<CurrencyCode, number> = {
-  USD: 0.0067,
-  EUR: 0.0062,
-  GBP: 0.0053,
-  NOK: 0.069,
-  AUD: 0.0102,
-  CAD: 0.0092,
-  SGD: 0.009,
-};
 
 // ── Preset configuration ──────────────────────────────────────────
 // Each preset defines:
@@ -145,8 +134,6 @@ export function createDefaultPlanInput(): PlanInput {
     incomeMode: "monthlyTakeHome",
     yearlyGrossIncome: 5500000,
     household: 1,
-    currency: "NOK",
-    exchangeRate: currencyRates.NOK,
     bufferPercent: 5,
     savingsGoalPercent: 20,
     taxAssumptions: {

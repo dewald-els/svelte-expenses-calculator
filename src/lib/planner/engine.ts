@@ -252,7 +252,6 @@ export function calculatePlan(input: PlanInput): PlanResult {
 
   // 2. Sanitise scalar inputs
   const household = clamp(Math.floor(input.household || 1), 1, 10);
-  const exchangeRate = sanitise(input.exchangeRate);
   const bufferPercent = clamp(sanitise(input.bufferPercent), 0, 20);
   const savingsGoalPercent = clamp(sanitise(input.savingsGoalPercent), 0, 70);
 
@@ -303,8 +302,9 @@ export function calculatePlan(input: PlanInput): PlanResult {
     threeMonthSavings: monthlySavings * 3,
     sixMonthSavings: monthlySavings * 6,
     twelveMonthSavings: monthlySavings * 12,
+    fiveYearSavings: monthlySavings * 60,
+    tenYearSavings: monthlySavings * 120,
     dailyFlexibleAllowance: flexibleSpend / (30 * household),
-    convertedSpend: monthlySpend * exchangeRate,
     insight: buildInsight(monthlySavings, savingsGoalGap, savingsGoalPercent),
     takeHomeEstimate,
     chartSlices: [
