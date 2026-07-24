@@ -131,7 +131,7 @@ export const presetExpenses: Record<
 export function createDefaultPlanInput(): PlanInput {
   return {
     income: 320000,
-    incomeMode: "monthlyTakeHome",
+    incomeMode: "yearlyGross",
     yearlyGrossIncome: 5500000,
     household: 1,
     bufferPercent: 5,

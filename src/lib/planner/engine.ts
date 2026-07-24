@@ -15,6 +15,7 @@ const sliceColors = [
   "#a9a2d6",
   "#d88484",
   "#8db2ce",
+  "#7fb069",
 ];
 
 // ── Pure helpers ───────────────────────────────────────────────────
@@ -298,12 +299,12 @@ export function calculatePlan(input: PlanInput): PlanResult {
     targetMonthlySpend,
     savingsGoalGap,
     incomeUsedRate,
-    annualSavings: monthlySavings * 12,
-    threeMonthSavings: monthlySavings * 3,
-    sixMonthSavings: monthlySavings * 6,
-    twelveMonthSavings: monthlySavings * 12,
-    fiveYearSavings: monthlySavings * 60,
-    tenYearSavings: monthlySavings * 120,
+    annualSavings: targetMonthlySavings * 12,
+    threeMonthSavings: targetMonthlySavings * 3,
+    sixMonthSavings: targetMonthlySavings * 6,
+    twelveMonthSavings: targetMonthlySavings * 12,
+    fiveYearSavings: targetMonthlySavings * 60,
+    tenYearSavings: targetMonthlySavings * 120,
     dailyFlexibleAllowance: flexibleSpend / (30 * household),
     insight: buildInsight(monthlySavings, savingsGoalGap, savingsGoalPercent),
     takeHomeEstimate,
@@ -344,6 +345,11 @@ export function calculatePlan(input: PlanInput): PlanResult {
         name: "Other + buffer",
         amount: expense(input.expenses, "other") + bufferAmount,
         color: sliceColors[5],
+      },
+      {
+        name: "Savings",
+        amount: targetMonthlySavings,
+        color: sliceColors[6],
       },
     ],
     incomeSplit: buildIncomeSplit(

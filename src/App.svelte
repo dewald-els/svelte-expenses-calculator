@@ -432,8 +432,40 @@
 
                 {#if planResult.takeHomeEstimate}
                   <tr>
-                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Estimated take-home</td>
-                    <td class="border border-gray-300 px-3 py-2 text-right font-mono font-semibold text-gray-900">
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Monthly gross income</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono">
+                      {formatYen(planResult.takeHomeEstimate.monthlyGross)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Income tax</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono text-red-700">
+                      −{formatYen(planResult.takeHomeEstimate.monthlyIncomeTax)}
+                    </td>
+                  </tr>
+                  {#if planResult.takeHomeEstimate.monthlyResidentTax > 0}
+                    <tr>
+                      <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Resident tax</td>
+                      <td class="border border-gray-300 px-3 py-2 text-right font-mono text-red-700">
+                        −{formatYen(planResult.takeHomeEstimate.monthlyResidentTax)}
+                      </td>
+                    </tr>
+                  {/if}
+                  <tr>
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Social insurance</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono text-red-700">
+                      −{formatYen(planResult.takeHomeEstimate.monthlySocialInsurance)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 bg-gray-50 px-3 py-2 font-medium text-gray-700">Employment insurance</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono text-red-700">
+                      −{formatYen(planResult.takeHomeEstimate.monthlyEmploymentInsurance)}
+                    </td>
+                  </tr>
+                  <tr class="bg-gray-200 font-bold">
+                    <td class="border border-gray-300 px-3 py-2 text-gray-900">Estimated take-home</td>
+                    <td class="border border-gray-300 px-3 py-2 text-right font-mono text-gray-900">
                       {formatYen(planResult.effectiveMonthlyIncome)}
                     </td>
                   </tr>
@@ -709,12 +741,13 @@
           <div class="p-4">
             <ExpenseDonut
               slices={planResult.chartSlices}
-              total={planResult.monthlySpend}
+              total={planResult.monthlySpend + planResult.targetMonthlySavings}
             />
-            <div class="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                <div class="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
               {#each planResult.chartSlices as slice (slice.name)}
+                {@const chartTotal = planResult.monthlySpend + planResult.targetMonthlySavings}
                 {@const percent = Math.round(
-                  (slice.amount / Math.max(planResult.monthlySpend, 1)) * 100,
+                  (slice.amount / Math.max(chartTotal, 1)) * 100,
                 )}
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex min-w-0 items-center gap-2">
