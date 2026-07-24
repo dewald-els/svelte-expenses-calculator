@@ -175,36 +175,7 @@
   }
 </script>
 
-<header class="site-header">
-  <a class="brand" href="/">
-    <span class="brand-mark">東</span>
-    <span>Tokyo Living</span>
-  </a>
-  <div class="header-actions">
-    <button class="ghost-button" type="button" onclick={resetPlan}>Reset</button
-    >
-    <button class="primary-button" type="button" onclick={savePlan}
-      >Save plan</button
-    >
-  </div>
-</header>
-
 <main class="app-shell">
-  <section class="hero">
-    <div>
-      <div class="eyebrow">MONTHLY COST-OF-LIVING PLANNER</div>
-      <h1>Plan your life in Tokyo,<br /><span>not just the move.</span></h1>
-      <p>
-        Estimate monthly spending, test rent and lifestyle scenarios, and
-        calculate how much you can save from your take-home pay.
-      </p>
-    </div>
-    <div class="hero-stamp">
-      <span>生活</span>
-      <small>LIVING<br />PLANNER</small>
-    </div>
-  </section>
-
   <section class="preset-row" aria-label="Lifestyle presets">
     {#each presetOptions as preset (preset.name)}
       <button
@@ -228,7 +199,10 @@
           <p class="section-kicker">YOUR MONTH</p>
           <h2>Income and expenses</h2>
         </div>
-        <span class="status-pill">{saveStatus}</span>
+        <div class="header-actions">
+          <button class="ghost-button" type="button" onclick={resetPlan}>Reset</button>
+          <button class="primary-button" type="button" onclick={savePlan}>Save plan</button>
+        </div>
       </div>
 
       <div class="form-grid">
