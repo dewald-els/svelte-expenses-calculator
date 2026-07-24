@@ -544,7 +544,7 @@
           >
         </div>
         <div>
-          <span>Available to save</span><strong
+          <span>Actual savings (current plan)</span><strong
             >{formatYen(planResult.monthlySavings)}</strong
           >
         </div>
@@ -562,7 +562,7 @@
 
       <div class="goal-card">
         <div class="goal-head">
-          <span>Savings goal</span>
+          <span>Savings target</span>
           <strong>{planInput.savingsGoalPercent}%</strong>
         </div>
         <input
@@ -577,16 +577,22 @@
         </div>
         <div class="goal-stats">
           <div>
-            <span>Target save / month</span>
+            <span>Projected savings / month</span>
             <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
           </div>
           <div>
-            <span>Max spend to hit goal</span>
+            <span>Spend budget to hit target</span>
             <strong>{formatYen(planResult.targetMonthlySpend)}</strong>
+          </div>
+          <div>
+            <span>Disposable income / month</span>
+            <strong>{formatYen(planResult.savingsGoalGap)}</strong>
           </div>
         </div>
         <small>
-          Based on effective monthly take-home after tax.
+          Based on effective monthly take-home after tax at {planInput.savingsGoalPercent}%.
+          Spend budget = income - projected savings. Disposable income = spend
+          budget - your current monthly spend.
           {#if planResult.savingsGoalGap >= 0}
             You are {formatYen(planResult.savingsGoalGap)} above this goal.
           {:else}
