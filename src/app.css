@@ -167,8 +167,19 @@ h1 span {
 }
 
 .preset-card.active {
+  background: var(--accent);
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px #c94c3515;
+  color: #fff;
+  box-shadow: 0 0 0 3px #c94c3530;
+}
+
+.preset-card.active small {
+  color: rgb(255 255 255 / 0.88);
+}
+
+.preset-card.active .preset-icon {
+  background: rgb(255 255 255 / 0.2);
+  color: #fff;
 }
 
 .preset-icon,
@@ -444,6 +455,33 @@ h1 span {
   font-weight: 850;
   line-height: 1;
   margin-top: 10px;
+}
+
+.total-yen .total-unit {
+  font-size: 0.32em;
+  font-weight: 500;
+  color: #a9beb6;
+  margin-left: 6px;
+}
+
+.total-yen .of-text {
+  font-size: 0.45em;
+  font-weight: 500;
+}
+
+.outlook-summary {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #d8e8e2;
+  margin: 12px 0 0;
+}
+
+.outlook-summary strong {
+  color: #fff;
+}
+
+.outlook-summary.over strong {
+  color: #f2b8a8;
 }
 
 .converted-total {

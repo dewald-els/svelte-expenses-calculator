@@ -514,12 +514,28 @@
     </div>
 
     <aside class="panel results-panel">
-      <p class="section-kicker light">MONTHLY SPEND OUTLOOK</p>
-      <div class="total-yen">{formatYen(planResult.monthlySpend)}</div>
-      <div class="converted-total">
-        {planInput.currency}
-        {Math.round(planResult.convertedSpend).toLocaleString("en-US")}
+      <p class="section-kicker light">Monthly spend outlook</p>
+      <div class="total-yen">
+        {formatYen(planResult.monthlySpend)}<span class="total-unit"
+          >/ month</span
+        >
       </div>
+      {#if planResult.monthlySavings >= 0}
+        <p class="outlook-summary">
+          That's {formatPercent(planResult.incomeUsedRate)} of your {formatYen(
+            planResult.effectiveMonthlyIncome,
+          )} take-home, leaving
+          <strong>{formatYen(planResult.monthlySavings)}</strong> to save each month.
+        </p>
+      {:else}
+        <p class="outlook-summary over">
+          That's {formatPercent(planResult.incomeUsedRate)} of your {formatYen(
+            planResult.effectiveMonthlyIncome,
+          )} take-home, over budget by
+          <strong>{formatYen(Math.abs(planResult.monthlySavings))}</strong> each
+          month.
+        </p>
+      {/if}
       <p class="exchange-note">
         Total monthly spend = base expenses + unexpected-expense buffer
       </p>
