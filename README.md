@@ -1,6 +1,6 @@
 # Expense Planner
 
-Svelte 5 app for planning monthly Tokyo relocation costs, savings outlook, and income split distribution.
+Svelte 5 app for planning monthly Tokyo costs, savings outlook, and income split distribution.
 
 ## Development
 
