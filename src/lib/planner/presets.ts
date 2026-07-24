@@ -15,46 +15,112 @@ export const currencyRates: Record<CurrencyCode, number> = {
   SGD: 0.009,
 };
 
+// ── Preset configuration ──────────────────────────────────────────
+// Each preset defines:
+//   budgetUse  – fraction of max available base expenses to allocate (0–1)
+//   weights    – how to split allocated budget across categories (sum = 1)
+//   steps      – rounding step per category for clean numbers
+
+interface PresetConfig {
+  budgetUse: number;
+  weights: Record<ExpenseId, number>;
+}
+
+const steps: Record<ExpenseId, number> = {
+  rent: 5000,
+  utilities: 1000,
+  communications: 1000,
+  insurance: 1000,
+  groceries: 1000,
+  dining: 1000,
+  transport: 1000,
+  leisure: 1000,
+  personal: 1000,
+  other: 1000,
+};
+
+const presetConfigs: Record<LifestylePresetName, PresetConfig> = {
+  lean: {
+    budgetUse: 0.60,
+    weights: {
+      rent: 0.374,
+      utilities: 0.054,
+      communications: 0.034,
+      insurance: 0.020,
+      groceries: 0.204,
+      dining: 0.102,
+      transport: 0.068,
+      leisure: 0.068,
+      personal: 0.054,
+      other: 0.022,
+    },
+  },
+  balanced: {
+    budgetUse: 0.82,
+    weights: {
+      rent: 0.400,
+      utilities: 0.055,
+      communications: 0.035,
+      insurance: 0.025,
+      groceries: 0.175,
+      dining: 0.100,
+      transport: 0.060,
+      leisure: 0.075,
+      personal: 0.050,
+      other: 0.025,
+    },
+  },
+  comfortable: {
+    budgetUse: 0.98,
+    weights: {
+      rent: 0.4375,
+      utilities: 0.058,
+      communications: 0.033,
+      insurance: 0.025,
+      groceries: 0.175,
+      dining: 0.104,
+      transport: 0.050,
+      leisure: 0.063,
+      personal: 0.033,
+      other: 0.022,
+    },
+  },
+};
+
+/**
+ * Compute preset expense amounts dynamically from live inputs.
+ *
+ * maxBaseExpenses = income × (1 − savingsGoalPercent/100) / (1 + bufferPercent/100)
+ * allocatedBudget = maxBaseExpenses × budgetUse
+ * expense[id] = round(allocatedBudget × weight[id], step[id])
+ */
+export function computePresetExpenses(
+  name: LifestylePresetName,
+  income: number,
+  bufferPercent: number,
+  savingsGoalPercent: number,
+): Record<ExpenseId, number> {
+  const config = presetConfigs[name];
+  const maxBase = (income * (1 - savingsGoalPercent / 100)) / (1 + bufferPercent / 100);
+  const allocated = maxBase * config.budgetUse;
+
+  const result = {} as Record<ExpenseId, number>;
+  for (const id of Object.keys(config.weights) as ExpenseId[]) {
+    const raw = allocated * config.weights[id];
+    const step = steps[id];
+    result[id] = Math.max(0, Math.round(raw / step) * step);
+  }
+  return result;
+}
+
+// Keep a static version for initial load (before user has changed anything)
 export const presetExpenses: Record<
   LifestylePresetName,
   Record<ExpenseId, number>
 > = {
-  lean: {
-    rent: 70000,
-    utilities: 10000,
-    communications: 6000,
-    insurance: 5000,
-    groceries: 32000,
-    dining: 10000,
-    transport: 9000,
-    leisure: 8000,
-    personal: 7000,
-    other: 3000,
-  },
-  balanced: {
-    rent: 110000,
-    utilities: 13000,
-    communications: 8000,
-    insurance: 6000,
-    groceries: 45000,
-    dining: 25000,
-    transport: 12000,
-    leisure: 18000,
-    personal: 12000,
-    other: 5000,
-  },
-  comfortable: {
-    rent: 175000,
-    utilities: 18000,
-    communications: 10000,
-    insurance: 10000,
-    groceries: 65000,
-    dining: 50000,
-    transport: 18000,
-    leisure: 40000,
-    personal: 25000,
-    other: 12000,
-  },
+  lean: computePresetExpenses("lean", 320000, 5, 20),
+  balanced: computePresetExpenses("balanced", 320000, 5, 20),
+  comfortable: computePresetExpenses("comfortable", 320000, 5, 20),
 };
 
 export function createDefaultPlanInput(): PlanInput {
@@ -83,16 +149,6 @@ export function createDefaultPlanInput(): PlanInput {
 export function findMatchingPresetName(
   expenses: Record<ExpenseId, number>,
 ): LifestylePresetName | null {
-  const names: LifestylePresetName[] = ["lean", "balanced", "comfortable"];
-  for (const name of names) {
-    const preset = presetExpenses[name];
-    if (
-      Object.keys(preset).every(
-        (id) => preset[id as ExpenseId] === expenses[id as ExpenseId],
-      )
-    ) {
-      return name;
-    }
-  }
+  // No longer meaningful for exact matching since presets are dynamic
   return null;
 }

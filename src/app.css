@@ -523,12 +523,15 @@ h1 span {
 
 .summary-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 8px;
   margin: 24px 0;
 }
 
 .summary-stats div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 13px;
   background: #ffffff10;
   border: 1px solid #ffffff18;
@@ -587,16 +590,16 @@ h1 span {
 
 .summary-stats span,
 .summary-stats strong {
-  display: block;
+  display: inline;
 }
 
 .summary-stats span {
-  font-size: 11px;
+  font-size: 12px;
   color: #b7cbc3;
 }
 
 .summary-stats strong {
-  margin-top: 5px;
+  margin-top: 0;
 }
 
 .progress-block > div:first-child {
@@ -825,10 +828,6 @@ footer {
 
   .tips-heading {
     display: block;
-  }
-
-  .summary-stats {
-    grid-template-columns: 1fr;
   }
 
   .hero {

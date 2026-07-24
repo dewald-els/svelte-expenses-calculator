@@ -7,6 +7,7 @@
     savePlanDraft,
   } from "./lib/planner/persistence";
   import {
+    computePresetExpenses,
     createDefaultPlanInput,
     currencyRates,
     findMatchingPresetName,
@@ -63,7 +64,11 @@
   let planResult = $derived.by(() => calculatePlan($state.snapshot(planInput)));
 
   function formatYen(amount: number): string {
-    return `¥${Math.round(amount).toLocaleString("en-US")}`;
+    const rounded = Math.round(amount);
+    if (rounded < 0) {
+      return `-¥${Math.abs(rounded).toLocaleString("en-US")}`;
+    }
+    return `¥${rounded.toLocaleString("en-US")}`;
   }
 
   function formatPercent(percent: number): string {
@@ -156,7 +161,15 @@
 
   function applyPreset(name: LifestylePresetName): void {
     activePreset = name;
-    planInput.expenses = { ...presetExpenses[name] };
+    const income = planInput.incomeMode === "yearlyGross"
+      ? (planResult?.effectiveMonthlyIncome ?? planInput.income)
+      : planInput.income;
+    planInput.expenses = computePresetExpenses(
+      name,
+      income,
+      planInput.bufferPercent,
+      planInput.savingsGoalPercent,
+    );
   }
 
   function savePlan(): void {
@@ -409,6 +422,31 @@
       <div class="divider"></div>
       <div class="section-row">
         <div>
+          <p class="section-kicker">SAVINGS</p>
+          <h3>Monthly savings target</h3>
+        </div>
+        <strong>{planInput.savingsGoalPercent}%</strong>
+      </div>
+      <div class="buffer-card">
+        <div>
+          <span>Save from take-home</span>
+          <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="70"
+          value={planInput.savingsGoalPercent}
+          oninput={(event) => updateSavingsGoalPercent(inputValue(event))}
+        />
+        <div class="range-labels">
+          <span>0%</span><span>35%</span><span>70%</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-row">
+        <div>
           <p class="section-kicker">FIXED COSTS</p>
           <h3>Home and essentials</h3>
         </div>
@@ -488,109 +526,96 @@
     </div>
 
     <aside class="panel results-panel">
-      <p class="section-kicker light">Monthly spend outlook</p>
+      <p class="section-kicker light">Monthly commitment</p>
       <div class="total-yen">
-        <span class="total-value">{formatYen(planResult.monthlySpend)}</span><span class="total-unit"
+        <span class="total-value">{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</span><span class="total-unit"
           >/ month</span
         >
       </div>
-      {#if planResult.monthlySavings >= 0}
+      {#if planResult.savingsGoalGap >= 0}
         <p class="outlook-summary">
-          That's {formatPercent(planResult.incomeUsedRate)} of your {formatYen(
+          That's {formatPercent(((planResult.monthlySpend + planResult.targetMonthlySavings) / planResult.effectiveMonthlyIncome) * 100)} of your {formatYen(
             planResult.effectiveMonthlyIncome,
           )} take-home, leaving
-          <strong>{formatYen(planResult.monthlySavings)}</strong> to save each month.
+          <strong>{formatYen(planResult.savingsGoalGap)}</strong> remaining each month.
         </p>
       {:else}
         <p class="outlook-summary over">
-          That's {formatPercent(planResult.incomeUsedRate)} of your {formatYen(
+          That's {formatPercent(((planResult.monthlySpend + planResult.targetMonthlySavings) / planResult.effectiveMonthlyIncome) * 100)} of your {formatYen(
             planResult.effectiveMonthlyIncome,
           )} take-home, over budget by
-          <strong>{formatYen(Math.abs(planResult.monthlySavings))}</strong> each
+          <strong>{formatYen(Math.abs(planResult.savingsGoalGap))}</strong> each
           month.
         </p>
       {/if}
       <p class="exchange-note">
-        Total monthly spend = base expenses + unexpected-expense buffer
+        Total monthly commitment = base expenses + buffer + savings target
       </p>
       <div class="spend-breakdown">
-        <div>
-          <span>Base expenses</span>
+        {#each [...fixedExpenseFields, ...flexibleExpenseFields] as field (field.id)}
+          <div>
+            <span>{field.label}</span>
+            <strong>{formatYen(planInput.expenses[field.id])}</strong>
+          </div>
+        {/each}
+        <div style="border-top: 1px solid #ffffff30; padding-top: 6px; margin-top: 4px;">
+          <span>Base expenses subtotal</span>
           <strong>{formatYen(planResult.baseExpenses)}</strong>
         </div>
         <div>
-          <span>Buffer amount</span>
+          <span>Buffer ({planInput.bufferPercent}%)</span>
           <strong
             >{formatYen(
               planResult.monthlySpend - planResult.baseExpenses,
             )}</strong
           >
         </div>
+        <div>
+          <span>Savings target ({planInput.savingsGoalPercent}%)</span>
+          <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
+        </div>
+        <div style="border-top: 1px solid #ffffff30; padding-top: 6px; margin-top: 4px;">
+          <span><strong>Total committed</strong></span>
+          <strong>{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</strong>
+        </div>
+        <div>
+          <span><strong>Remaining</strong></span>
+          <strong>{formatYen(planResult.savingsGoalGap)}</strong>
+        </div>
       </div>
       <div class="summary-stats three">
         <div>
-          <span>Income basis</span><strong
+          <span>Take-home income</span><strong
             >{formatYen(planResult.effectiveMonthlyIncome)}</strong
           >
         </div>
         <div>
-          <span>Actual savings (current plan)</span><strong
-            >{formatYen(planResult.monthlySavings)}</strong
+          <span>Expenses + buffer</span><strong
+            >{formatYen(planResult.monthlySpend)}</strong
           >
         </div>
         <div>
-          <span>Savings rate</span><strong
-            >{formatPercent(planResult.savingsRate * 100)}</strong
+          <span>Savings target ({planInput.savingsGoalPercent}%)</span><strong
+            >{formatYen(planResult.targetMonthlySavings)}</strong
           >
         </div>
         <div>
-          <span>Annual savings</span><strong
-            >{formatYen(planResult.annualSavings)}</strong
+          <span>Total committed</span><strong
+            >{formatYen(planResult.monthlySpend + planResult.targetMonthlySavings)}</strong
+          >
+        </div>
+        <div>
+          <span>Remaining monthly</span><strong
+            >{formatYen(planResult.savingsGoalGap)}</strong
+          >
+        </div>
+        <div>
+          <span>Remaining annual</span><strong
+            >{formatYen(planResult.savingsGoalGap * 12)}</strong
           >
         </div>
       </div>
 
-      <div class="goal-card">
-        <div class="goal-head">
-          <span>Savings target</span>
-          <strong>{planInput.savingsGoalPercent}%</strong>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="70"
-          value={planInput.savingsGoalPercent}
-          oninput={(event) => updateSavingsGoalPercent(inputValue(event))}
-        />
-        <div class="range-labels">
-          <span>0%</span><span>35%</span><span>70%</span>
-        </div>
-        <div class="goal-stats">
-          <div>
-            <span>Projected savings / month</span>
-            <strong>{formatYen(planResult.targetMonthlySavings)}</strong>
-          </div>
-          <div>
-            <span>Spend budget to hit target</span>
-            <strong>{formatYen(planResult.targetMonthlySpend)}</strong>
-          </div>
-          <div>
-            <span>Disposable income / month</span>
-            <strong>{formatYen(planResult.savingsGoalGap)}</strong>
-          </div>
-        </div>
-        <small>
-          Based on effective monthly take-home after tax at {planInput.savingsGoalPercent}%.
-          Spend budget = income - projected savings. Disposable income = spend
-          budget - your current monthly spend.
-          {#if planResult.savingsGoalGap >= 0}
-            You are {formatYen(planResult.savingsGoalGap)} above this goal.
-          {:else}
-            You need {formatYen(Math.abs(planResult.savingsGoalGap))} more per month
-            to hit this goal.
-          {/if}
-        </small>
-      </div>
       <div class="progress-block">
         <div>
           <span>Income used</span><strong
